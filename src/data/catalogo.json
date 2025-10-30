@@ -1,0 +1,70 @@
+{
+  "departamentos": [
+    "Atlántida",
+    "Colón", 
+    "Gracias a Dios",
+    "Islas de la Bahía"
+  ],
+  "municipios": [
+    {
+      "departamento": "Atlántida",
+      "nombre": "La Ceiba"
+    },
+    {
+      "departamento": "Colón",
+      "nombre": "Iriona"
+    },
+    {
+      "departamento": "Gracias a Dios",
+      "nombre": "Santa Fe"
+    },
+    {
+      "departamento": "Islas de la Bahía",
+      "nombre": "Limón"
+    }
+  ],
+  "metodos": [
+    {
+      "codigo": 1,
+      "nombre": "Píldora combinada"
+    },
+    {
+      "codigo": 2,
+      "nombre": "Inyección mensual"
+    },
+    {
+      "codigo": 3,
+      "nombre": "Inyección trimestral"
+    },
+    {
+      "codigo": 4,
+      "nombre": "Implante"
+    },
+    {
+      "codigo": 5,
+      "nombre": "DIU TCU 380 A"
+    },
+    {
+      "codigo": 6,
+      "nombre": "Condón Masculino"
+    },
+    {
+      "codigo": 7,
+      "nombre": "Condón Femenino"
+    },
+    {
+      "codigo": 8,
+      "nombre": "PAE (Levonorgestrel)"
+    },
+    {
+      "codigo": 9,
+      "nombre": "Otros"
+    }
+  ],
+  "tiposEstablecimiento": [
+    "Centro Educativo",
+    "CIS",
+    "UAPS",
+    "Políclinico"
+  ]
+}

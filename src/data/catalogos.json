@@ -1,0 +1,125 @@
+{
+  "metadata": {
+    "nombre": "Catálogos - Proyecto MEMI",
+    "descripcion": "Catálogos maestros de departamentos, municipios, métodos y tipos de establecimiento",
+    "fuente": "Dashboard MEMI/Catálogos-Tabla 1.csv",
+    "fechaGeneracion": "2025-10-30T04:53:07.175Z"
+  },
+  "departamentos": [
+    "Atlántida",
+    "Colón",
+    "Gracias a Dios",
+    "Islas de la Bahía"
+  ],
+  "municipios": [
+    {
+      "nombre": "Iriona",
+      "departamento": "Colón"
+    },
+    {
+      "nombre": "José Santos Guardiola",
+      "departamento": "Islas de la Bahía"
+    },
+    {
+      "nombre": "La Ceiba",
+      "departamento": "Atlántida"
+    },
+    {
+      "nombre": "Limón",
+      "departamento": "Islas de la Bahía"
+    },
+    {
+      "nombre": "Santa Fe",
+      "departamento": "Gracias a Dios"
+    },
+    {
+      "nombre": "Santa Rosa de Aguán",
+      "departamento": "Colón"
+    },
+    {
+      "nombre": "Wampusirpi",
+      "departamento": "Gracias a Dios"
+    }
+  ],
+  "metodos": [
+    "Condón Femenino",
+    "Condón Masculino",
+    "DIU TCU 380 A",
+    "Implante",
+    "Inyección mensual",
+    "Inyección trimestral",
+    "Otros",
+    "PAE (Levonorgestrel)",
+    "Píldora combinada"
+  ],
+  "tiposEstablecimiento": [
+    "CIS",
+    "Centro Educativo",
+    "Hospital",
+    "Políclinico",
+    "UAPS"
+  ],
+  "relaciones": [
+    {
+      "departamento": "Atlántida",
+      "municipio": "La Ceiba",
+      "metodo": "Píldora combinada",
+      "tipoEstablecimiento": "Centro Educativo"
+    },
+    {
+      "departamento": "Colón",
+      "municipio": "Iriona",
+      "metodo": "Inyección mensual",
+      "tipoEstablecimiento": "CIS"
+    },
+    {
+      "departamento": "Gracias a Dios",
+      "municipio": "Santa Fe",
+      "metodo": "Inyección trimestral",
+      "tipoEstablecimiento": "UAPS"
+    },
+    {
+      "departamento": "Islas de la Bahía",
+      "municipio": "Limón",
+      "metodo": "Implante",
+      "tipoEstablecimiento": "Políclinico"
+    },
+    {
+      "departamento": "Colón",
+      "municipio": "Santa Rosa de Aguán",
+      "metodo": "DIU TCU 380 A",
+      "tipoEstablecimiento": "Hospital"
+    },
+    {
+      "departamento": "Gracias a Dios",
+      "municipio": "Wampusirpi",
+      "metodo": "Condón Masculino",
+      "tipoEstablecimiento": null
+    },
+    {
+      "departamento": "Islas de la Bahía",
+      "municipio": "José Santos Guardiola",
+      "metodo": "Condón Femenino",
+      "tipoEstablecimiento": null
+    },
+    {
+      "departamento": null,
+      "municipio": null,
+      "metodo": "PAE (Levonorgestrel)",
+      "tipoEstablecimiento": null
+    },
+    {
+      "departamento": null,
+      "municipio": null,
+      "metodo": "Otros",
+      "tipoEstablecimiento": null
+    }
+  ],
+  "estadisticas": {
+    "totalDepartamentos": 4,
+    "totalMunicipios": 7,
+    "totalMetodos": 9,
+    "totalTiposEstablecimiento": 5,
+    "totalRelaciones": 9
+  }
+}

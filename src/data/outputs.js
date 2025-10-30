@@ -1,0 +1,85 @@
+// Outputs y Planes de Acción - Datos reales del proyecto MEMI
+// Actividades de seguimiento con estados y avances
+
+export const planesAccion = [
+  {
+    id: 1,
+    establecimientoId: 1,
+    nivel: 'Global',
+    departamento: null,
+    municipio: null,
+    comunidad: null,
+    nombreEstablecimiento: null,
+    tipoEstablecimiento: null,
+    output: '1.1 Revisar, adaptar y validar los programas nacionales de EIS -dentro y fuera de la escuela- asegurando la inclusión de enfoques culturalmente sensibles, y el alineamiento con los estándares internacionales, y disponibles en sus propios idiomas en Honduras.',
+    actividad: 'Revisión y adaptación de programas nacionales de EIS',
+    estado: 'En Proceso',
+    porcentajeAvance: 75,
+    fechaInicio: '1/1/24',
+    fechaFin: '1/12/24'
+  },
+  {
+    id: 2,
+    establecimientoId: 1,
+    nivel: 'Global',
+    departamento: null,
+    municipio: null,
+    comunidad: null,
+    nombreEstablecimiento: null,
+    tipoEstablecimiento: null,
+    output: '1.2 Diseño, impresión y publicación de materiales educativos y promocionales sobre EIS dentro y fuera de la escuela.',
+    actividad: 'Diseño e impresión de materiales educativos sobre EIS',
+    estado: 'Completado',
+    porcentajeAvance: 100,
+    fechaInicio: '1/2/24',
+    fechaFin: '1/1/25'
+  },
+  {
+    id: 3,
+    establecimientoId: 2,
+    nivel: 'Comunitario',
+    departamento: 'Colón',
+    municipio: 'Iriona',
+    comunidad: 'Cusuna',
+    nombreEstablecimiento: 'Centro de Salud Cusuna',
+    tipoEstablecimiento: 'UAPS',
+    output: '1.3 Llevar a cabo talleres para capacitar a facilitadores en EIS extraescolares de Organizaciones de Sociedad Civil seleccionadas ubicadas a nivel comunitario en Honduras.',
+    actividad: 'Talleres de capacitación a facilitadores en EIS extraescolares',
+    estado: 'Completado',
+    porcentajeAvance: 100,
+    fechaInicio: '1/3/24',
+    fechaFin: '1/2/25'
+  },
+  {
+    id: 4,
+    establecimientoId: 1,
+    nivel: 'Global',
+    departamento: null,
+    municipio: null,
+    comunidad: null,
+    nombreEstablecimiento: null,
+    tipoEstablecimiento: null,
+    output: '1.4 Realizar talleres para capacitar a facilitadores (docentes) en EIS en la escuela de institutos/escuelas seleccionados de la Secretaría de Educación ubicados a nivel comunitario en Honduras.',
+    actividad: 'Talleres de capacitación a docentes en EIS escolar',
+    estado: 'Pendiente',
+    porcentajeAvance: 0,
+    fechaInicio: '1/4/24',
+    fechaFin: '1/3/25'
+  },
+  {
+    id: 5,
+    establecimientoId: 1,
+    nivel: 'Comunitario',
+    departamento: 'Colón',
+    municipio: 'Iriona',
+    comunidad: 'Cusuna',
+    nombreEstablecimiento: 'Centro de Salud Cusuna',
+    tipoEstablecimiento: 'UAPS',
+    output: '1.5 Implementar talleres con el objetivo de capacitar en EIS a adolescentes y jóvenes no escolarizados de municipios seleccionados en Honduras.',
+    actividad: 'Talleres de EIS para adolescentes no escolarizados',
+    estado: 'En Proceso',
+    porcentajeAvance: 60,
+    fechaInicio: '1/5/24',
+    fechaFin: '1/4/25'
+  }
+]
