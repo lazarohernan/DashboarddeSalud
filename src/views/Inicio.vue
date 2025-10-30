@@ -1,5 +1,10 @@
 <template>
   <div class="max-w-7xl mx-auto px-3 space-y-6">
+    <!-- Carrusel de Imágenes -->
+    <div class="mb-8 animate-fade-in">
+      <Carrusel />
+    </div>
+
     <!-- Cabecera del Proyecto -->
     <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg p-8 text-center animate-fade-in">
       <h1 class="text-3xl md:text-4xl font-bold mb-4">PROYECTO</h1>
@@ -104,6 +109,7 @@
 <script setup>
 // Vista de inicio con información del proyecto - animaciones sutiles y distribución atractiva
 import { Target, Trophy, BookOpen, Stethoscope, Users, BarChart3 } from 'lucide-vue-next'
+import Carrusel from '../components/Carrusel.vue'
 </script>
 
 <style scoped>

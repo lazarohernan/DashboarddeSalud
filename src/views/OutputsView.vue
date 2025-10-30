@@ -114,22 +114,22 @@
           <div class="text-sm text-orange-600 mt-1">{{ Math.round((actividadesCompletadas / datos.length) * 100) }}% del total</div>
         </div>
 
-        <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
           <div class="flex items-center gap-2 mb-2">
-            <Clock class="w-5 h-5 text-amber-600" />
-            <span class="font-medium text-amber-800">En Proceso</span>
+            <Clock class="w-5 h-5 text-orange-600" />
+            <span class="font-medium text-orange-800">En Proceso</span>
           </div>
-          <div class="text-2xl font-bold text-amber-900">{{ actividadesEnProceso }}</div>
-          <div class="text-sm text-amber-600 mt-1">{{ Math.round((actividadesEnProceso / datos.length) * 100) }}% del total</div>
+          <div class="text-2xl font-bold text-orange-900">{{ actividadesEnProceso }}</div>
+          <div class="text-sm text-orange-600 mt-1">{{ Math.round((actividadesEnProceso / datos.length) * 100) }}% del total</div>
         </div>
 
-        <div class="bg-orange-100 border border-orange-300 p-4 rounded-lg">
+        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
           <div class="flex items-center gap-2 mb-2">
-            <AlertCircle class="w-5 h-5 text-orange-700" />
-            <span class="font-medium text-orange-900">Pendientes</span>
+            <AlertCircle class="w-5 h-5 text-orange-600" />
+            <span class="font-medium text-orange-800">Pendientes</span>
           </div>
           <div class="text-2xl font-bold text-orange-900">{{ actividadesPendientes }}</div>
-          <div class="text-sm text-orange-700 mt-1">{{ Math.round((actividadesPendientes / datos.length) * 100) }}% del total</div>
+          <div class="text-sm text-orange-600 mt-1">{{ Math.round((actividadesPendientes / datos.length) * 100) }}% del total</div>
         </div>
       </div>
     </div>

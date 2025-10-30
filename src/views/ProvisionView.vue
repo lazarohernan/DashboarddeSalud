@@ -75,28 +75,28 @@
 
       <!-- Resumen general -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
           <div class="flex items-center gap-2 mb-2">
-            <Package class="w-5 h-5 text-blue-600" />
-            <span class="font-medium text-blue-800">Total Registros</span>
+            <Package class="w-5 h-5 text-orange-600" />
+            <span class="font-medium text-orange-800">Total Registros</span>
           </div>
-          <div class="text-2xl font-bold text-blue-900">{{ datos.length }}</div>
+          <div class="text-2xl font-bold text-orange-900">{{ datos.length }}</div>
         </div>
 
-        <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
           <div class="flex items-center gap-2 mb-2">
-            <Package class="w-5 h-5 text-green-600" />
-            <span class="font-medium text-green-800">Total Cantidad</span>
+            <Package class="w-5 h-5 text-orange-600" />
+            <span class="font-medium text-orange-800">Total Cantidad</span>
           </div>
-          <div class="text-2xl font-bold text-green-900">{{ totalCantidad }}</div>
+          <div class="text-2xl font-bold text-orange-900">{{ totalCantidad }}</div>
         </div>
 
-        <div class="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
           <div class="flex items-center gap-2 mb-2">
-            <Package class="w-5 h-5 text-purple-600" />
-            <span class="font-medium text-purple-800">Métodos Diferentes</span>
+            <Package class="w-5 h-5 text-orange-600" />
+            <span class="font-medium text-orange-800">Métodos Diferentes</span>
           </div>
-          <div class="text-2xl font-bold text-purple-900">{{ metodosUnicos.length }}</div>
+          <div class="text-2xl font-bold text-orange-900">{{ metodosUnicos.length }}</div>
         </div>
       </div>
     </div>
