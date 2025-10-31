@@ -103,6 +103,11 @@
         </div>
       </div>
     </div>
+
+    <!-- Mapa de Honduras -->
+    <div class="mb-8 mt-8 animate-fade-in">
+      <MapaHonduras />
+    </div>
   </div>
 </template>
 
@@ -110,6 +115,7 @@
 // Vista de inicio con información del proyecto - animaciones sutiles y distribución atractiva
 import { Target, Trophy, BookOpen, Stethoscope, Users, BarChart3 } from 'lucide-vue-next'
 import Carrusel from '../components/Carrusel.vue'
+import MapaHonduras from '../components/MapaHonduras.vue'
 </script>
 
 <style scoped>

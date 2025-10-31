@@ -1,4 +1,102 @@
 <template>
+  <!-- Sección de Resultados de Indicadores (Fuera del contenedor de la tabla) -->
+  <div class="border border-gray-300 p-6 rounded-lg bg-gray-50 mb-6">
+    <h3 class="text-base font-semibold text-gray-900 mb-4">Resultados de Indicadores</h3>
+    <ResultadosIndicadoresOuts 
+      @ano-seleccionado="handleAnoSeleccionado"
+      @limpiar-seleccion="handleLimpiarSeleccion"
+    />
+    
+    <!-- Cuadros de Outputs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+      <div
+        v-for="outputNum in [1, 2, 3, 4]"
+        :key="outputNum"
+        @click="outputSeleccionado = outputSeleccionado === outputNum ? null : outputNum"
+        :class="[
+          'border rounded-lg p-4 bg-white hover:shadow-md transition-all cursor-pointer',
+          outputSeleccionado === outputNum ? 'border-orange-500 shadow-md' : 'border-gray-300'
+        ]"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <h4 class="text-sm font-semibold text-gray-900">Output {{ outputNum }}</h4>
+        </div>
+        <p 
+          :class="[
+            'text-xs text-gray-600 mt-2 leading-relaxed',
+            outputSeleccionado === outputNum ? '' : 'line-clamp-2'
+          ]"
+        >
+          {{ getOutputNombre(outputNum) }}
+        </p>
+        <div class="mt-3 flex items-center gap-2">
+          <span class="text-xs text-gray-500">Indicadores:</span>
+          <span class="text-xs font-medium text-orange-600">
+            {{ getTotalIndicadores(outputNum) }}
+          </span>
+        </div>
+        <div v-if="anoSeleccionado" class="mt-2">
+          <span class="text-xs text-gray-500">Año {{ anoSeleccionado }}:</span>
+          <span class="text-xs font-medium text-gray-900 ml-1">
+            {{ getResumenPorAño(outputNum, anoSeleccionado) }}
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tarjetas de Indicadores cuando se selecciona un output -->
+    <div 
+      v-if="outputSeleccionado && anoSeleccionado" 
+      class="mt-6 pt-6 border-t border-gray-300"
+    >
+      <h4 class="text-sm font-semibold text-gray-900 mb-4">
+        Indicadores del Output {{ outputSeleccionado }}
+      </h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          v-for="(indicador, index) in getIndicadoresPorOutput(outputSeleccionado, anoSeleccionado)"
+          :key="indicador.codigo"
+          :style="{ animationDelay: `${index * 0.05}s` }"
+          class="tarjeta-indicador border border-gray-200 rounded-lg p-4 bg-white hover:shadow-md transition-shadow"
+        >
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <component 
+                :is="getIconoIndicador(indicador.codigo)" 
+                class="w-7 h-7 text-orange-600 flex-shrink-0"
+              />
+              <span class="text-xs font-mono font-medium text-orange-600">
+                {{ indicador.codigo }}
+              </span>
+            </div>
+            <div class="text-right flex items-center gap-1">
+              <span 
+                v-if="indicador.resultado !== null && indicador.resultado !== undefined"
+                class="text-xs text-gray-500"
+              >
+                Resultado:
+              </span>
+              <span 
+                v-if="indicador.resultado !== null && indicador.resultado !== undefined"
+                class="text-sm font-bold text-gray-900"
+              >
+                {{ indicador.resultado }}
+              </span>
+              <span v-else class="text-sm text-gray-400">-</span>
+            </div>
+          </div>
+          <p class="text-xs text-gray-700 leading-relaxed mt-2">
+            {{ indicador.nombre }}
+          </p>
+          <div class="mt-3 flex items-center gap-2 text-xs text-gray-500">
+            <span>Año {{ anoSeleccionado }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor principal con tabla -->
   <section class="border border-gray-300 p-6">
     <div class="flex items-center gap-2 mb-4">
       <TrendingUp class="w-5 h-5 text-gray-700" />
@@ -11,6 +109,7 @@
     </div>
 
     <div v-else class="space-y-6">
+
       <!-- Información del contexto -->
       <div class="bg-gray-50 p-4 rounded-lg">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -137,8 +236,48 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { TrendingUp, BarChart3, Check, Clock, AlertCircle } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { 
+  TrendingUp, 
+  BarChart3, 
+  Check, 
+  Clock, 
+  AlertCircle,
+  BookOpen,
+  FileText,
+  Users,
+  GraduationCap,
+  School,
+  UserCheck,
+  Award,
+  UserCog,
+  Heart,
+  HeartHandshake,
+  Megaphone,
+  Radio,
+  UserCircle,
+  Briefcase,
+  FileCheck,
+  Shield,
+  Activity,
+  Key,
+  Stethoscope,
+  Package,
+  Building,
+  UsersRound,
+  MessageSquare,
+  FileSearch,
+  Clipboard,
+  ClipboardCheck,
+  Flag,
+  Calendar,
+  Eye,
+  MapPin,
+  Globe,
+  Target
+} from 'lucide-vue-next'
+import ResultadosIndicadoresOuts from '../components/ResultadosIndicadoresOuts.vue'
+import { indicadoresPorOutput, getResumenOutput, getIndicadoresPorOutputYAño } from '../data/indicadores'
 
 const props = defineProps({
   datos: {
@@ -146,6 +285,106 @@ const props = defineProps({
     default: () => []
   }
 })
+
+// Selección de año (obligatorio)
+const anoSeleccionado = ref(null)
+
+// Output seleccionado (opcional)
+const outputSeleccionado = ref(null)
+
+const handleAnoSeleccionado = (ano) => {
+  anoSeleccionado.value = ano
+}
+
+const handleLimpiarSeleccion = () => {
+  anoSeleccionado.value = null
+  outputSeleccionado.value = null
+}
+
+// Función helper para obtener el nombre del output
+const getOutputNombre = (codOutput) => {
+  const output = indicadoresPorOutput[String(codOutput)]
+  if (!output) return 'Output no encontrado'
+  return output.nombre
+}
+
+// Función para obtener total de indicadores de un output
+const getTotalIndicadores = (codOutput) => {
+  const output = indicadoresPorOutput[String(codOutput)]
+  if (!output) return 0
+  return output.indicadores.length
+}
+
+// Función para obtener resumen por año
+const getResumenPorAño = (codOutput, año) => {
+  const resumen = getResumenOutput(String(codOutput), año)
+  return `${resumen.indicadoresConResultado}/${resumen.totalIndicadores} con resultado`
+}
+
+// Función para obtener indicadores de un output para mostrar en tarjetas
+const getIndicadoresPorOutput = (codOutput, año) => {
+  return getIndicadoresPorOutputYAño(String(codOutput), año)
+}
+
+// Función para obtener el icono apropiado según el código del indicador
+const getIconoIndicador = (codigo) => {
+  const iconos = {
+    // OUTPUT 1 - Educación Sexual Integral
+    '1.1': BookOpen,
+    '1.2': BarChart3,
+    '1.3': FileText,
+    '1.4': Users,
+    '1.5': School,
+    '1.6': Award,
+    '1.7': Heart,
+    '1.8': Heart,
+    '1.9': Megaphone,
+    '1.10': HeartHandshake,
+    '1.11': UserCircle,
+    
+    // OUTPUT 2 - Servicios de Salud
+    '2.1': FileCheck,
+    '2.2': Activity,
+    '2.3': Activity,
+    '2.4': FileText,
+    '2.5': Stethoscope,
+    '2.6': Stethoscope,
+    '2.7': Award,
+    '2.8': Stethoscope,
+    '2.9': Stethoscope,
+    '2.10': Package,
+    '2.11': Package,
+    '2.12': Megaphone,
+    '2.13': Key,
+    '2.14': UserCircle,
+    
+    // OUTPUT 3 - Liderazgo y Empoderamiento
+    '3.1': GraduationCap,
+    '3.2': Users,
+    '3.3': Users,
+    '3.4': UsersRound,
+    '3.5': UsersRound,
+    '3.6': Building,
+    '3.7': Shield,
+    '3.8': MessageSquare,
+    '3.9': UserCircle,
+    
+    // OUTPUT 4 - Seguimiento y Evaluación
+    '4.1': FileSearch,
+    '4.2': FileText,
+    '4.3': ClipboardCheck,
+    '4.4': BarChart3,
+    '4.5': Flag,
+    '4.6': Calendar,
+    '4.7': FileText,
+    '4.8': Eye,
+    '4.9': MapPin,
+    '4.10': Users,
+    '4.11': Briefcase
+  }
+  
+  return iconos[codigo] || Target
+}
 
 const formatearFecha = (fecha) => {
   if (!fecha) return '-'
@@ -174,3 +413,21 @@ const porcentajePromedioAvance = computed(() => {
   return Math.round(total / props.datos.length)
 })
 </script>
+
+<style scoped>
+@keyframes fadeInDiagonal {
+  from {
+    opacity: 0;
+    transform: translate(-20px, -20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.tarjeta-indicador {
+  animation: fadeInDiagonal 0.4s ease-out forwards;
+  opacity: 0;
+}
+</style>

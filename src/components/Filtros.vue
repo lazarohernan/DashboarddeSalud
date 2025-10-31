@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-gray-300 p-6">
+  <div class="filtros-container border border-gray-300 p-6 rounded-lg">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
     
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -12,7 +12,7 @@
         <select 
           :value="departamentoSeleccionado"
           @change="$emit('update:departamento', $event.target.value)"
-          class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-gray-500"
+          class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
           <option value="">Todos los departamentos</option>
           <option 
@@ -34,7 +34,7 @@
         <select 
           :value="municipioSeleccionado"
           @change="$emit('update:municipio', $event.target.value)"
-          class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-gray-500"
+          class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
           <option value="">Todos los municipios</option>
           <option 
@@ -56,7 +56,7 @@
         <select 
           :value="comunidadSeleccionada"
           @change="$emit('update:comunidad', $event.target.value)"
-          class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-gray-500"
+          class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
           <option value="">Todas las comunidades</option>
           <option 
@@ -80,7 +80,7 @@
         <select
           :value="tipoEstablecimientoSeleccionado"
           @change="$emit('update:tipoEstablecimiento', $event.target.value)"
-          class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-gray-500"
+          class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
           <option value="">Todos los tipos</option>
           <option
@@ -165,3 +165,59 @@ const tiposEstablecimientoUnicos = computed(() => {
   return tiposEstablecimiento.sort()
 })
 </script>
+
+<style scoped>
+/* Estilos mejorados para los selects */
+.filtro-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+  padding-right: 2.5rem;
+}
+
+.filtro-select:hover {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2378719a' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+}
+
+.filtro-select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ea580c' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+}
+
+/* Estilizar las opciones dentro del select usando :deep() */
+.filtro-select :deep(option) {
+  padding: 0.5rem;
+  background: white;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.filtro-select :deep(option:hover) {
+  background: #fef3c7;
+}
+
+.filtro-select :deep(option:checked),
+.filtro-select :deep(option:focus) {
+  background: #fed7aa;
+  color: #ea580c;
+  font-weight: 500;
+}
+
+/* Mejorar apariencia del contenedor de filtros */
+.filtros-container {
+  background: #fafafa;
+  border-radius: 0.5rem;
+}
+
+/* Mejorar labels */
+label {
+  color: #374151;
+  font-weight: 500;
+}
+
+label svg {
+  color: #ea580c;
+}
+</style>
