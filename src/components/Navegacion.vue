@@ -28,6 +28,7 @@ const opciones = [
   { id: 'inicio', nombre: 'Inicio' },
   { id: 'estandares', nombre: 'Estándares de Calidad' },
   { id: 'outputs', nombre: 'Outputs' },
+  { id: 'indicadores', nombre: 'Indicadores' },
   { id: 'provision', nombre: 'Provisión de Anticonceptivos' }
 ]
 

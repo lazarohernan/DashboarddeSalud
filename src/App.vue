@@ -39,9 +39,21 @@
         @update:tipoEstablecimiento="handleTipoEstablecimientoChange"
       />
 
+      <!-- Filtros para Indicadores -->
+      <Filtros
+        v-if="opcionActiva === 'indicadores'"
+        :datos-completos="[]"
+        :departamento-seleccionado="departamentoSeleccionado"
+        :municipio-seleccionado="municipioSeleccionado"
+        :mostrar-comunidad="false"
+        :solo-departamento-municipio="true"
+        @update:departamento="handleDepartamentoChange"
+        @update:municipio="handleMunicipioChange"
+      />
+
       <!-- Filtros para otras secciones (sin comunidad) -->
       <Filtros
-        v-if="opcionActiva !== 'inicio' && opcionActiva !== 'estandares' && opcionActiva !== 'outputs' && opcionActiva !== 'provision'"
+        v-if="opcionActiva !== 'inicio' && opcionActiva !== 'estandares' && opcionActiva !== 'outputs' && opcionActiva !== 'provision' && opcionActiva !== 'indicadores'"
         :datos-completos="datosCompletosSeccion"
         :departamento-seleccionado="departamentoSeleccionado"
         :municipio-seleccionado="municipioSeleccionado"
@@ -104,6 +116,13 @@
           v-if="opcionActiva === 'provision'"
           :datos="provisionAnticonceptivosFiltrados"
         />
+
+        <!-- Indicadores LNOB -->
+        <IndicadoresView
+          v-if="opcionActiva === 'indicadores'"
+          :departamento-seleccionado="departamentoSeleccionado"
+          :municipio-seleccionado="municipioSeleccionado"
+        />
       </div>
     </main>
 
@@ -148,6 +167,7 @@ import Inicio from './views/Inicio.vue'
 import EstandaresView from './views/EstandaresView.vue'
 import OutputsView from './views/OutputsView.vue'
 import ProvisionView from './views/ProvisionView.vue'
+import IndicadoresView from './views/IndicadoresView.vue'
 import {
   departamentos,
   municipios,

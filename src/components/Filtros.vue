@@ -70,7 +70,7 @@
       </div>
 
       <!-- Tipo de Establecimiento -->
-      <div>
+      <div v-if="!soloDepartamentoMunicipio">
         <label class="block text-sm font-medium text-gray-700 mb-2">
           <Building class="inline-block w-4 h-4 mr-1" />
           Tipo de Establecimiento
@@ -115,6 +115,10 @@ const props = defineProps({
     default: true
   },
   soloTiposEstandares: {
+    type: Boolean,
+    default: false
+  },
+  soloDepartamentoMunicipio: {
     type: Boolean,
     default: false
   }
