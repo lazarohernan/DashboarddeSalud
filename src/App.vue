@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white">
     <header class="border-b border-gray-300 py-4 px-6">
-      <h1 class="text-2xl font-bold text-gray-900">Proyecto Con Derecho a un Futuro</h1>
+      <h1 class="text-2xl font-bold text-gray-900">Proyecto No Dejar A Nadie Atrás</h1>
       <p class="text-sm text-gray-600 mt-1">Sistema de Monitoreo y Seguimiento</p>
     </header>
 
@@ -151,7 +151,7 @@
         
         <!-- Texto opcional -->
         <div class="text-center mt-4 text-sm text-gray-600">
-          <p>Proyecto Con Derecho a un Futuro - Sistema de Monitoreo y Seguimiento</p>
+          <p>Proyecto No Dejar A Nadie Atrás - Sistema de Monitoreo y Seguimiento</p>
         </div>
       </div>
     </footer>
