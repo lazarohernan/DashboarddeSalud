@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4">
     <h3 class="text-base font-semibold text-gray-800 mb-3">
-      Ejes de Estándares de Calidad
+      Ejes del Autodiagnóstico
     </h3>
     
     <!-- Carrusel horizontal -->

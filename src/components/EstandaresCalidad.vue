@@ -2,12 +2,12 @@
   <section class="border border-gray-300 p-6">
     <div class="flex items-center gap-2 mb-4">
       <ClipboardCheck class="w-5 h-5 text-gray-700" />
-      <h2 class="text-lg font-semibold text-gray-900">Estándares de Calidad</h2>
+      <h2 class="text-lg font-semibold text-gray-900">Autodiagnóstico</h2>
       <span class="text-xs text-gray-500">(Solo Establecimientos de Salud)</span>
     </div>
 
     <div v-if="datos.length === 0" class="text-sm text-gray-500 py-4">
-      No hay datos de estándares de calidad disponibles
+      No hay datos de autodiagnóstico disponibles
     </div>
 
     <div v-else>

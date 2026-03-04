@@ -139,14 +139,6 @@
             />
           </div>
           
-          <!-- Logo SESAL -->
-          <div class="flex items-center">
-            <img 
-              src="/Logo_de_SESAL.svg.png" 
-              alt="SESAL - Secretaría de Salud"
-              class="h-12 w-auto object-contain"
-            />
-          </div>
         </div>
         
         <!-- Texto opcional -->

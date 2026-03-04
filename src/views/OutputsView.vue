@@ -151,53 +151,67 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="item in datos"
-              :key="item.id"
-              class="border-b border-gray-200"
-            >
-              <td class="py-3 px-4 text-center text-gray-900 font-medium">{{ item.codOutput }}</td>
-              <td class="py-3 px-4 text-gray-900 max-w-lg">
-                <div class="break-words leading-relaxed">{{ item.output }}</div>
-              </td>
-              <td class="py-3 px-4 text-center text-gray-900 font-medium">{{ item.codActividad }}</td>
-              <td class="py-3 px-4 text-gray-900 max-w-xl">
-                <div class="break-words leading-relaxed">{{ item.actividad }}</div>
-              </td>
-              <td class="py-3 px-4 text-center">
-                <span
-                  :class="{
-                    'px-2 py-1 rounded-full text-xs font-medium': true,
-                    'bg-green-100 text-green-800': item.estado === 'Completado',
-                    'bg-yellow-100 text-yellow-800': item.estado === 'En Proceso',
-                    'bg-gray-100 text-gray-800': item.estado === 'Pendiente'
-                  }"
-                >
-                  {{ item.estado }}
-                </span>
-              </td>
-              <td class="py-3 px-4 text-center">
-                <div class="flex items-center gap-2">
-                  <div class="w-16 bg-gray-200 rounded-full h-2">
-                    <div
-                      class="h-2 rounded-full transition-all duration-300"
-                      :class="{
-                        'bg-green-600': item.porcentajeAvance === 100,
-                        'bg-yellow-600': item.porcentajeAvance >= 50 && item.porcentajeAvance < 100,
-                        'bg-red-600': item.porcentajeAvance < 50
-                      }"
-                      :style="{ width: item.porcentajeAvance + '%' }"
-                    ></div>
+            <template v-for="item in datos" :key="item.id">
+              <tr class="border-b border-gray-200">
+                <td class="py-3 px-4 text-center text-gray-900 font-medium">{{ item.codOutput }}</td>
+                <td class="py-3 px-4 text-gray-900 max-w-lg">
+                  <div class="break-words leading-relaxed">{{ item.output }}</div>
+                </td>
+                <td class="py-3 px-4 text-center text-gray-900 font-medium">{{ item.codActividad }}</td>
+                <td class="py-3 px-4 text-gray-900 max-w-xl">
+                  <div class="break-words leading-relaxed">{{ item.actividad }}</div>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <span
+                    :class="{
+                      'px-2 py-1 rounded-full text-xs font-medium': true,
+                      'bg-green-100 text-green-800': item.estado === 'Completado',
+                      'bg-yellow-100 text-yellow-800': item.estado === 'En Proceso',
+                      'bg-gray-100 text-gray-800': item.estado === 'Pendiente'
+                    }"
+                  >
+                    {{ item.estado }}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <div class="flex items-center gap-2">
+                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                      <div
+                        class="h-2 rounded-full transition-all duration-300"
+                        :class="{
+                          'bg-green-600': item.porcentajeAvance === 100,
+                          'bg-yellow-600': item.porcentajeAvance >= 50 && item.porcentajeAvance < 100,
+                          'bg-red-600': item.porcentajeAvance < 50
+                        }"
+                        :style="{ width: item.porcentajeAvance + '%' }"
+                      ></div>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">{{ item.porcentajeAvance }}%</span>
                   </div>
-                  <span class="text-sm font-medium text-gray-900">{{ item.porcentajeAvance }}%</span>
-                </div>
-              </td>
-              <td class="py-3 px-4 text-center text-gray-600 text-xs">{{ formatearFecha(item.fechaInicio) }}</td>
-              <td class="py-3 px-4 text-center text-gray-600 text-xs">{{ formatearFecha(item.fechaFin) }}</td>
-              <td class="py-3 px-4 text-gray-700 max-w-xs">
-                <div class="truncate" :title="item.establecimientoNombre">{{ item.establecimientoNombre }}</div>
-              </td>
-            </tr>
+                </td>
+                <td class="py-3 px-4 text-center text-gray-600 text-xs">{{ formatearFecha(item.fechaInicio) }}</td>
+                <td class="py-3 px-4 text-center text-gray-600 text-xs">{{ formatearFecha(item.fechaFin) }}</td>
+                <td class="py-3 px-4 text-gray-700 max-w-xs">
+                  <div class="truncate" :title="item.establecimientoNombre">{{ item.establecimientoNombre }}</div>
+                </td>
+              </tr>
+              <!-- Fila de Comentarios / Observaciones -->
+              <tr class="border-b border-gray-100 bg-gray-50">
+                <td colspan="9" class="py-2 px-4">
+                  <div class="flex items-start gap-2">
+                    <MessageSquarePlus class="w-4 h-4 text-gray-400 mt-1.5 shrink-0" />
+                    <div class="flex-1">
+                      <label class="text-xs font-medium text-gray-500 mb-1 block">Comentarios / Observaciones</label>
+                      <div
+                        class="w-full text-xs text-gray-400 bg-gray-100 border border-gray-200 rounded-md px-3 py-2 min-h-[2.5rem] cursor-not-allowed select-none"
+                      >
+                        {{ comentarios[item.id] || 'Sin observaciones registradas' }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
@@ -274,7 +288,8 @@ import {
   Eye,
   MapPin,
   Globe,
-  Target
+  Target,
+  MessageSquarePlus
 } from 'lucide-vue-next'
 import ResultadosIndicadoresOuts from '../components/ResultadosIndicadoresOuts.vue'
 import { indicadoresPorOutput, getResumenOutput, getIndicadoresPorOutputYAño } from '../data/indicadores'
@@ -291,6 +306,9 @@ const anoSeleccionado = ref(null)
 
 // Output seleccionado (opcional)
 const outputSeleccionado = ref(null)
+
+// Comentarios/observaciones por actividad (enfoque cualitativo)
+const comentarios = ref({})
 
 const handleAnoSeleccionado = (ano) => {
   anoSeleccionado.value = ano

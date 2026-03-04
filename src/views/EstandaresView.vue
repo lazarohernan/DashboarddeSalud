@@ -2,12 +2,48 @@
   <section class="border border-gray-300 p-6">
     <div class="flex items-center gap-2 mb-4">
       <ClipboardCheck class="w-5 h-5 text-gray-700" />
-      <h2 class="text-lg font-semibold text-gray-900">Estándares de Calidad</h2>
+      <h2 class="text-lg font-semibold text-gray-900">Autodiagnóstico</h2>
       <span class="text-xs text-gray-500">(Solo Establecimientos de Salud)</span>
     </div>
 
+    <!-- Descripción del Autodiagnóstico -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
+      <p class="text-sm text-gray-700 leading-relaxed">
+        El autodiagnóstico es una herramienta práctica que permite al establecimiento de salud evaluar, de manera estructurada, qué tan alineados están sus servicios con los estándares de calidad para la atención de adolescentes.
+        Su objetivo no es "calificar" al equipo, sino identificar fortalezas, brechas y prioridades de mejora en ocho áreas clave: información, apoyo comunitario, oferta de servicios, competencias del personal, condiciones del establecimiento, equidad, uso de datos y participación adolescente.
+        Es el primer paso para ordenar el trabajo y avanzar de forma progresiva hacia servicios más accesibles, respetuosos y de calidad.
+      </p>
+    </div>
+
+    <!-- Procedimiento para realizar el Autodiagnóstico -->
+    <div class="bg-orange-50 border border-orange-200 rounded-lg p-5 mb-6">
+      <h3 class="text-sm font-semibold text-orange-900 mb-3">Procedimiento para realizar el autodiagnóstico:</h3>
+      <ol class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2">
+          <span class="font-semibold text-orange-700 shrink-0">1.</span>
+          <span><strong>Formar un equipo pequeño:</strong> Incluir al responsable del establecimiento y al menos un proveedor/a de salud.</span>
+        </li>
+        <li class="flex gap-2">
+          <span class="font-semibold text-orange-700 shrink-0">2.</span>
+          <span><strong>Leer y responder el cuestionario completo:</strong> Marcar cada pregunta según la situación real del establecimiento.</span>
+        </li>
+        <li class="flex gap-2">
+          <span class="font-semibold text-orange-700 shrink-0">3.</span>
+          <span><strong>Responder con objetividad:</strong> Basarse en evidencia concreta (no en supuestos).</span>
+        </li>
+        <li class="flex gap-2">
+          <span class="font-semibold text-orange-700 shrink-0">4.</span>
+          <span><strong>Identificar brechas:</strong> Tomar nota breve de los aspectos que requieren mejora.</span>
+        </li>
+        <li class="flex gap-2">
+          <span class="font-semibold text-orange-700 shrink-0">5.</span>
+          <span><strong>Definir acciones inmediatas:</strong> Seleccionar pocas acciones concretas y asignar responsable.</span>
+        </li>
+      </ol>
+    </div>
+
     <div v-if="datos.length === 0" class="text-sm text-gray-500 py-4">
-      No hay datos de estándares de calidad disponibles
+      No hay datos de autodiagnóstico disponibles
     </div>
 
     <div v-else>

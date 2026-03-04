@@ -22,7 +22,7 @@
     <div class="bg-white border border-gray-300 rounded-lg p-6 animate-slide-in">
       <div class="flex items-center gap-3 mb-4">
         <Target class="w-6 h-6 text-orange-600" />
-        <h3 class="text-xl font-bold text-gray-800">Objetivo Final 2025</h3>
+        <h3 class="text-xl font-bold text-gray-800">Objetivo Final 2027</h3>
       </div>
       <div class="space-y-2 text-gray-700">
         <p class="animate-fade-in-delay-1">• Se ha acelerado la reducción de las muertes maternas prevenibles</p>
@@ -35,7 +35,7 @@
     <div class="bg-white border border-gray-300 rounded-lg p-6 animate-slide-in-right">
       <div class="flex items-center gap-3 mb-4">
         <Trophy class="w-6 h-6 text-orange-600" />
-        <h3 class="text-xl font-bold text-gray-800">Resultado Esperado 2025</h3>
+        <h3 class="text-xl font-bold text-gray-800">Resultado Esperado 2027</h3>
       </div>
       <p class="text-gray-700 leading-relaxed animate-fade-in">
         El proyecto ha contribuido a la reducción del embarazo adolescente brindando servicios de calidad 

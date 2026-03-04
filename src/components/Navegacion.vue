@@ -26,7 +26,7 @@ const emit = defineEmits(['opcion-seleccionada'])
 
 const opciones = [
   { id: 'inicio', nombre: 'Inicio' },
-  { id: 'estandares', nombre: 'Estándares de Calidad' },
+  { id: 'estandares', nombre: 'Autodiagnóstico' },
   { id: 'outputs', nombre: 'Outputs' },
   { id: 'indicadores', nombre: 'Indicadores' },
   { id: 'provision', nombre: 'Provisión de Anticonceptivos' }
