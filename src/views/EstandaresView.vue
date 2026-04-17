@@ -1,5 +1,5 @@
 <template>
-  <section class="border border-gray-300 p-6">
+  <section class="border border-gray-200 p-6 rounded-lg bg-white">
     <div class="flex items-center gap-2 mb-4">
       <ClipboardCheck class="w-5 h-5 text-gray-700" />
       <h2 class="text-lg font-semibold text-gray-900">Autodiagnóstico</h2>
@@ -140,37 +140,37 @@
 
       <!-- Tabla de Estándares -->
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm border-collapse border border-gray-300">
           <thead>
-          <tr class="bg-orange-50 border-b border-orange-200">
-            <th class="text-left py-3 px-4 font-medium text-orange-900">Código Eje</th>
-            <th class="text-left py-3 px-4 font-medium text-orange-900">Nombre del Eje</th>
-            <th class="text-left py-3 px-4 font-medium text-orange-900">Código Indicador</th>
-            <th class="text-left py-3 px-4 font-medium text-orange-900">Indicador</th>
-            <th class="text-center py-3 px-4 font-medium text-orange-900">Cumple</th>
-            <th class="text-left py-3 px-4 font-medium text-orange-900">Fecha</th>
+          <tr class="bg-orange-50">
+            <th class="border border-gray-300 text-left py-3 px-4 font-medium text-orange-900">Código Eje</th>
+            <th class="border border-gray-300 text-left py-3 px-4 font-medium text-orange-900">Nombre del Eje</th>
+            <th class="border border-gray-300 text-left py-3 px-4 font-medium text-orange-900">Código Indicador</th>
+            <th class="border border-gray-300 text-left py-3 px-4 font-medium text-orange-900">Indicador</th>
+            <th class="border border-gray-300 text-center py-3 px-4 font-medium text-orange-900">Cumple</th>
+            <th class="border border-gray-300 text-left py-3 px-4 font-medium text-orange-900">Fecha</th>
           </tr>
         </thead>
         <tbody>
-            <tr 
-              v-for="item in datosMostrados" 
+            <tr
+              v-for="item in datosMostrados"
               :key="item.id"
               @click="mostrarDetalleEje(item)"
-              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+              class="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
             >
-            <td class="py-3 px-4 text-gray-900 font-medium">{{ item.codEje }}</td>
-            <td class="py-3 px-4 text-gray-700">
+            <td class="border border-gray-300 py-3 px-4 text-gray-900 font-medium">{{ item.codEje }}</td>
+            <td class="border border-gray-300 py-3 px-4 text-gray-700">
               <div class="max-w-sm break-words leading-relaxed">
                 {{ item.ejeNombre }}
               </div>
             </td>
-            <td class="py-3 px-4 text-gray-700 font-mono text-xs">{{ item.codIndicador }}</td>
-            <td class="py-3 px-4 text-gray-700">
+            <td class="border border-gray-300 py-3 px-4 text-gray-700 font-mono text-xs">{{ item.codIndicador }}</td>
+            <td class="border border-gray-300 py-3 px-4 text-gray-700">
               <div class="max-w-lg break-words leading-relaxed">
                 {{ item.indicador }}
               </div>
             </td>
-              <td class="py-3 px-4 text-center">
+              <td class="border border-gray-300 py-3 px-4 text-center">
                 <div class="flex flex-col items-center gap-1">
                   <span v-if="item.cumple" class="inline-flex items-center gap-1 text-green-700">
                     <Check class="w-4 h-4" />
@@ -185,7 +185,7 @@
                   </span>
                 </div>
               </td>
-              <td class="py-3 px-4 text-gray-600 text-xs">{{ item.fecha }}</td>
+              <td class="border border-gray-300 py-3 px-4 text-gray-600 text-xs">{{ item.fecha }}</td>
             </tr>
           </tbody>
         </table>

@@ -1,215 +1,192 @@
 <template>
-  <section class="border border-gray-300 p-6">
-    <div class="flex items-center gap-2 mb-4">
-      <Package class="w-5 h-5 text-gray-700" />
-      <h2 class="text-lg font-semibold text-gray-900">Provisión de Anticonceptivos</h2>
-      <span class="text-xs text-gray-500">(Sistema Cardex - Inventario)</span>
-    </div>
+  <section class="space-y-6">
 
-    <div v-if="datos.length === 0" class="text-sm text-gray-500 py-4">
-      No hay datos de provisión de anticonceptivos disponibles
-    </div>
+    <!-- Filtros -->
+    <div class="border border-gray-200 px-6 py-4 rounded-lg bg-white">
+      <div class="flex items-end gap-4 flex-wrap">
 
-    <div v-else class="space-y-6">
-      <!-- Información del establecimiento -->
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div>
-            <span class="font-medium text-gray-700">Establecimiento:</span>
-            <div class="text-gray-900">{{ establecimientoActual }}</div>
-          </div>
-          <div>
-            <span class="font-medium text-gray-700">Tipo:</span>
-            <div class="text-gray-900">{{ tipoEstablecimientoActual }}</div>
-          </div>
-          <div>
-            <span class="font-medium text-gray-700">Comunidad:</span>
-            <div class="text-gray-900">{{ comunidadActual }}</div>
-          </div>
-          <div>
-            <span class="font-medium text-gray-700">Registros mostrados:</span>
-            <div class="text-gray-900">{{ datos.length }}</div>
-          </div>
+        <!-- RISS -->
+        <div class="flex-1 min-w-[140px]">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">RISS</label>
+          <select v-model="filtroRISS" class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+            <option value="">Todas</option>
+            <option v-for="r in rissDisponibles" :key="r" :value="r">{{ r }}</option>
+          </select>
         </div>
+
+        <!-- Municipio -->
+        <div class="flex-1 min-w-[140px]">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">Municipio</label>
+          <select v-model="filtroMunicipio" class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+            <option value="">Todos</option>
+            <option v-for="m in municipiosDisponibles" :key="m" :value="m">{{ m }}</option>
+          </select>
+        </div>
+
+        <!-- Año -->
+        <div class="flex-1 min-w-[100px]">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">Año</label>
+          <select v-model="filtroAno" class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+            <option value="">Todos</option>
+            <option v-for="a in anosDisponibles" :key="a" :value="a">{{ a }}</option>
+          </select>
+        </div>
+
+        <!-- Mes -->
+        <div class="flex-1 min-w-[120px]">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">Mes</label>
+          <select v-model="filtroMes" class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+            <option value="">Todos</option>
+            <option v-for="m in mesesOrdenados" :key="m" :value="m">{{ m }}</option>
+          </select>
+        </div>
+
+        <!-- Tipo de Método -->
+        <div class="flex-1 min-w-[180px]">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">Tipo de Método</label>
+          <select v-model="filtroMetodo" class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+            <option value="">Todos</option>
+            <option v-for="m in metodosDisponibles" :key="m" :value="m">{{ m }}</option>
+          </select>
+        </div>
+
+        <!-- Switch Lista / Tarjetas -->
+        <div class="flex items-end gap-2 pb-0.5">
+          <button
+            @click="vistaActiva = 'tarjetas'"
+            :class="[
+              'px-3 py-2 rounded-md text-sm font-medium border transition-all duration-200',
+              vistaActiva === 'tarjetas'
+                ? 'bg-slate-700 text-orange-400 border-slate-700'
+                : 'bg-white text-gray-500 border-gray-300 hover:border-gray-400'
+            ]"
+          >
+            <LayoutGrid class="w-4 h-4" />
+          </button>
+          <button
+            @click="vistaActiva = 'lista'"
+            :class="[
+              'px-3 py-2 rounded-md text-sm font-medium border transition-all duration-200',
+              vistaActiva === 'lista'
+                ? 'bg-slate-700 text-orange-400 border-slate-700'
+                : 'bg-white text-gray-500 border-gray-300 hover:border-gray-400'
+            ]"
+          >
+            <List class="w-4 h-4" />
+          </button>
+
+          <!-- Reset -->
+          <button
+            @click="resetFiltros"
+            title="Limpiar filtros"
+            class="p-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:text-orange-600 hover:border-orange-400 transition-all duration-200"
+          >
+            <RotateCcw class="w-4 h-4" />
+          </button>
+        </div>
+
       </div>
+    </div>
 
-      <!-- Gráfica de línea: Disponibilidad por Municipio -->
-      <div class="bg-white border border-gray-200 rounded-lg p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <TrendingUp class="w-5 h-5 text-gray-700" />
-          <h3 class="text-lg font-semibold text-gray-900">Disponibilidad de Métodos por Municipio</h3>
-          <span class="text-xs text-gray-500">(Fin de Mes - Inicial)</span>
-        </div>
-        
-        <!-- Gráfica de línea SVG mejorada - Más ancha y en tonos naranja -->
-        <div class="w-full overflow-x-auto">
-          <svg width="100%" height="320" viewBox="0 0 1100 320" preserveAspectRatio="xMidYMid meet" class="min-w-[1000px]">
-            <!-- Fondo con líneas horizontales de guía -->
-            <g class="grid-lines">
-              <line v-for="i in 5" :key="'h'+i" 
-                x1="70" :y1="40 + (i-1) * 55" 
-                x2="1070" :y2="40 + (i-1) * 55" 
-                stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/>
-            </g>
-            
-            <!-- Eje Y -->
-            <line x1="70" y1="40" x2="70" y2="260" stroke="#d1d5db" stroke-width="1"/>
-            
-            <!-- Eje X -->
-            <line x1="70" y1="260" x2="1070" y2="260" stroke="#d1d5db" stroke-width="1"/>
-            
-            <!-- Etiquetas del eje Y -->
-            <text x="60" y="45" text-anchor="end" font-size="11" fill="#6b7280">{{ maxDisponible }}</text>
-            <text x="60" y="100" text-anchor="end" font-size="11" fill="#6b7280">{{ Math.round(maxDisponible * 0.75) }}</text>
-            <text x="60" y="155" text-anchor="end" font-size="11" fill="#6b7280">{{ Math.round(maxDisponible * 0.5) }}</text>
-            <text x="60" y="210" text-anchor="end" font-size="11" fill="#6b7280">{{ Math.round(maxDisponible * 0.25) }}</text>
-            <text x="60" y="265" text-anchor="end" font-size="11" fill="#6b7280">0</text>
-            
-            <!-- Área bajo la línea (gradiente naranja) -->
-            <defs>
-              <linearGradient id="areaGradientOrange" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.35" />
-                <stop offset="100%" style="stop-color:#f97316;stop-opacity:0.05" />
-              </linearGradient>
-            </defs>
-            
-            <polygon
-              :points="areaPoints"
-              fill="url(#areaGradientOrange)"
-            />
-            
-            <!-- Línea principal (naranja) -->
-            <polyline
-              :points="linePoints"
-              fill="none"
-              stroke="#f97316"
-              stroke-width="2.5"
-              stroke-linejoin="round"
-              stroke-linecap="round"
-            />
-            
-            <!-- Puntos y etiquetas -->
-            <g v-for="(municipio, index) in chartData" :key="municipio.nombre">
-              <!-- Punto (naranja) -->
-              <circle
-                :cx="municipio.x"
-                :cy="municipio.y"
-                r="6"
-                fill="#f97316"
-                stroke="white"
-                stroke-width="2"
-                class="cursor-pointer"
-              />
-              
-              <!-- Valor sobre el punto -->
-              <text 
-                :x="municipio.x" 
-                :y="municipio.y - 12"
-                text-anchor="middle" 
-                font-size="12"
-                font-weight="600"
-                fill="#ea580c"
-              >
-                {{ municipio.disponible }}
-              </text>
-              
-              <!-- Etiqueta del municipio (eje X) -->
-              <text 
-                :x="municipio.x" 
-                y="280" 
-                text-anchor="middle" 
-                font-size="11"
-                fill="#4b5563"
-                :transform="`rotate(-20, ${municipio.x}, 280)`"
-              >
-                {{ municipio.nombreCorto }}
-              </text>
-            </g>
-          </svg>
-        </div>
-        
-        <!-- Leyenda -->
-        <div class="mt-4 flex items-center justify-center gap-6 text-xs text-gray-600">
+    <!-- Resumen -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <div class="text-xs text-gray-500 mb-1">Total consumo</div>
+        <div class="text-2xl font-bold text-gray-900">{{ totalConsumo.toLocaleString() }}</div>
+        <div class="text-xs text-gray-400 mt-1">unidades</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <div class="text-xs text-gray-500 mb-1">Métodos</div>
+        <div class="text-2xl font-bold text-gray-900">{{ metodosConConsumo.length }}</div>
+        <div class="text-xs text-gray-400 mt-1">con consumo registrado</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <div class="text-xs text-gray-500 mb-1">Establecimientos</div>
+        <div class="text-2xl font-bold text-gray-900">{{ establecimientosUnicos }}</div>
+        <div class="text-xs text-gray-400 mt-1">en los filtros actuales</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <div class="text-xs text-gray-500 mb-1">Registros</div>
+        <div class="text-2xl font-bold text-gray-900">{{ datosFiltrados.length }}</div>
+        <div class="text-xs text-gray-400 mt-1">de {{ datos.length }} totales</div>
+      </div>
+    </div>
+
+    <!-- Vista Tarjetas -->
+    <div v-if="vistaActiva === 'tarjetas'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        v-for="metodo in consumoPorMetodo"
+        :key="metodo.nombre"
+        class="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow"
+      >
+        <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
-            <span>Disponibilidad (unidades)</span>
+            <Package class="w-5 h-5 text-orange-500 flex-shrink-0" />
+            <span class="text-xs font-mono text-orange-600 font-medium">Cód. {{ metodo.codigo }}</span>
           </div>
+          <span class="text-2xl font-bold text-gray-900">{{ metodo.consumo.toLocaleString() }}</span>
+        </div>
+        <p class="text-sm font-medium text-gray-800 leading-snug mb-3">{{ metodo.nombre }}</p>
+        <!-- Barra de progreso relativa al método con más consumo -->
+        <div class="w-full bg-gray-100 rounded-full h-1.5">
+          <div
+            class="bg-orange-500 h-1.5 rounded-full transition-all duration-500"
+            :style="{ width: maxConsumo > 0 ? (metodo.consumo / maxConsumo * 100) + '%' : '0%' }"
+          ></div>
+        </div>
+        <div class="text-xs text-gray-400 mt-1">
+          {{ maxConsumo > 0 ? Math.round(metodo.consumo / maxConsumo * 100) : 0 }}% del método con mayor consumo
         </div>
       </div>
 
+      <div v-if="consumoPorMetodo.length === 0" class="col-span-full text-sm text-gray-500 py-8 text-center">
+        No hay registros con consumo para los filtros seleccionados.
+      </div>
+    </div>
+
+    <!-- Vista Lista -->
+    <div v-if="vistaActiva === 'lista'" class="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm border-collapse border border-gray-300">
           <thead>
-            <tr class="border-b border-gray-300">
-              <th class="text-center py-3 px-4 font-medium text-gray-700">Código Método</th>
-              <th class="text-left py-3 px-4 font-medium text-gray-700">Método</th>
-              <th class="text-center py-3 px-4 font-medium text-gray-700">Transacción</th>
-              <th class="text-center py-3 px-4 font-medium text-gray-700">
-                <Package class="inline-block w-4 h-4 mr-1" />
-                Cantidad
-              </th>
-              <th class="text-center py-3 px-4 font-medium text-gray-700">Fecha</th>
+            <tr class="bg-gray-50">
+              <th class="border border-gray-300 text-left py-3 px-4 font-medium text-gray-700">Tipo de Método</th>
+              <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">RISS</th>
+              <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">Municipio</th>
+              <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">Mes</th>
+              <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">Año</th>
+              <th class="border border-gray-300 text-center py-3 px-4 font-medium text-orange-700">Consumo</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="(item, index) in datos"
+              v-for="item in datosFiltrados"
               :key="item.id"
-              class="border-b border-gray-200"
+              class="hover:bg-gray-50"
             >
-              <td class="py-3 px-4 text-center text-gray-900 font-medium">{{ item.codMetodo }}</td>
-              <td class="py-3 px-4 text-gray-900 font-medium">{{ item.metodo }}</td>
-              <td class="py-3 px-4 text-center">
-                <span
-                    :class="{
-                      'px-3 py-1.5 rounded-full text-xs font-medium min-w-[80px] inline-block text-center': true,
-                      'bg-orange-100 text-orange-800': item.transaccion === 'Inicial',
-                      'bg-green-100 text-green-800': item.transaccion === 'Fin de Mes'
-                    }"
-                  >
-                    {{ item.transaccion }}
-                  </span>
+              <td class="border border-gray-300 py-3 px-4 text-gray-900 font-medium">{{ item.tipoMetodo }}</td>
+              <td class="border border-gray-300 py-3 px-4 text-center text-gray-600 text-xs">{{ item.RISS }}</td>
+              <td class="border border-gray-300 py-3 px-4 text-center text-gray-600 text-xs">{{ item.municipio }}</td>
+              <td class="border border-gray-300 py-3 px-4 text-center text-gray-600 text-xs">{{ item.mes }}</td>
+              <td class="border border-gray-300 py-3 px-4 text-center text-gray-600 text-xs">{{ item.ano }}</td>
+              <td class="border border-gray-300 py-3 px-4 text-center font-bold text-gray-900">{{ item.consumo }}</td>
+            </tr>
+            <tr v-if="datosFiltrados.length === 0">
+              <td colspan="6" class="py-8 text-center text-sm text-gray-500">
+                No hay registros para los filtros seleccionados.
               </td>
-              <td class="py-3 px-4 text-center text-gray-900 font-medium">{{ item.cantidad }}</td>
-              <td class="py-3 px-4 text-center text-gray-600 text-xs">{{ item.fecha }}</td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <!-- Resumen general -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-          <div class="flex items-center gap-2 mb-2">
-            <Package class="w-5 h-5 text-orange-600" />
-            <span class="font-medium text-orange-800">Total Registros</span>
-          </div>
-          <div class="text-2xl font-bold text-orange-900">{{ datos.length }}</div>
-        </div>
-
-        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-          <div class="flex items-center gap-2 mb-2">
-            <Package class="w-5 h-5 text-orange-600" />
-            <span class="font-medium text-orange-800">Total Cantidad</span>
-          </div>
-          <div class="text-2xl font-bold text-orange-900">{{ totalCantidad }}</div>
-        </div>
-
-        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-          <div class="flex items-center gap-2 mb-2">
-            <Package class="w-5 h-5 text-orange-600" />
-            <span class="font-medium text-orange-800">Métodos Diferentes</span>
-          </div>
-          <div class="text-2xl font-bold text-orange-900">{{ metodosUnicos.length }}</div>
-        </div>
-      </div>
     </div>
+
   </section>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { Package, TrendingUp } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { Package, LayoutGrid, List, RotateCcw } from 'lucide-vue-next'
 
 const props = defineProps({
   datos: {
@@ -218,127 +195,100 @@ const props = defineProps({
   }
 })
 
-// Información del establecimiento actual (basado en los datos filtrados)
-const establecimientoActual = computed(() => {
-  const establecimientos = [...new Set(props.datos.map(d => d.establecimientoNombre))]
-  return establecimientos.length === 1 ? establecimientos[0] : 'Múltiples establecimientos'
-})
+// Vista activa: tarjetas o lista
+const vistaActiva = ref('tarjetas')
 
-const tipoEstablecimientoActual = computed(() => {
-  const tipos = [...new Set(props.datos.map(d => d.tipoEstablecimiento))]
-  return tipos.length === 1 ? tipos[0] : 'Múltiples tipos'
-})
+// Filtros
+const filtroRISS = ref('')
+const filtroMunicipio = ref('')
+const filtroAno = ref('')
+const filtroMes = ref('')
+const filtroMetodo = ref('')
 
-const comunidadActual = computed(() => {
-  const comunidades = [...new Set(props.datos.map(d => d.comunidad))]
-  return comunidades.length === 1 ? comunidades[0] : 'Múltiples comunidades'
-})
+const resetFiltros = () => {
+  filtroRISS.value = ''
+  filtroMunicipio.value = ''
+  filtroAno.value = ''
+  filtroMes.value = ''
+  filtroMetodo.value = ''
+}
 
-const metodosUnicos = computed(() => {
-  return [...new Set(props.datos.map(d => d.metodo))]
-})
-
-// Totales generales
-const totalCantidad = computed(() =>
-  props.datos.reduce((sum, item) => sum + item.cantidad, 0)
+// Opciones de filtros — derivan de los datos completos
+const rissDisponibles = computed(() =>
+  [...new Set(props.datos.map(d => d.RISS).filter(Boolean))].sort()
 )
 
-// Datos para la gráfica de disponibilidad por municipio
-const datosPorMunicipio = computed(() => {
-  // Agrupar datos por municipio y tipo de transacción
-  const agrupado = {}
-  
-  props.datos.forEach(item => {
-    const key = `${item.municipio}-${item.metodo}`
-    if (!agrupado[key]) {
-      agrupado[key] = {
-        municipio: item.municipio,
-        metodo: item.metodo,
-        inicial: 0,
-        finMes: 0
-      }
-    }
-    
-    if (item.transaccion === 'Inicial') {
-      agrupado[key].inicial += item.cantidad
-    } else if (item.transaccion === 'Fin de Mes') {
-      agrupado[key].finMes += item.cantidad
-    }
-  })
-  
-  // Calcular disponibilidad y agrupar por municipio
-  const porMunicipio = {}
-  Object.values(agrupado).forEach(item => {
-    const disponible = item.finMes - item.inicial
-    if (!porMunicipio[item.municipio]) {
-      porMunicipio[item.municipio] = 0
-    }
-    porMunicipio[item.municipio] += disponible
-  })
-  
-  // Los 7 municipios LNOB con datos mock para demostración
-  const municipiosLNOB = [
-    { nombre: 'La Ceiba', nombreCorto: 'La Ceiba' },
-    { nombre: 'Iriona', nombreCorto: 'Iriona' },
-    { nombre: 'Limón', nombreCorto: 'Limón' },
-    { nombre: 'Santa Fe', nombreCorto: 'Santa Fe' },
-    { nombre: 'Santa Rosa de Aguán', nombreCorto: 'Sta Rosa' },
-    { nombre: 'José Santos Guardiola', nombreCorto: 'J.S. Guardiola' },
-    { nombre: 'Puerto Lempira', nombreCorto: 'Pto Lempira' }
-  ]
-  
-  // Datos mock realistas para demostración
-  const mockData = {
-    'La Ceiba': 180,
-    'Iriona': porMunicipio['Iriona'] || 145,
-    'Limón': 95,
-    'Santa Fe': 160,
-    'Santa Rosa de Aguán': 75,
-    'José Santos Guardiola': 120,
-    'Puerto Lempira': 85
-  }
-  
-  return municipiosLNOB.map(m => ({
-    nombre: m.nombre,
-    nombreCorto: m.nombreCorto,
-    disponible: Math.abs(porMunicipio[m.nombre] || mockData[m.nombre])
-  }))
+const municipiosDisponibles = computed(() => {
+  const base = filtroRISS.value
+    ? props.datos.filter(d => d.RISS === filtroRISS.value)
+    : props.datos
+  return [...new Set(base.map(d => d.municipio).filter(Boolean))].sort()
 })
 
-const maxDisponible = computed(() => 
-  Math.max(...datosPorMunicipio.value.map(m => m.disponible), 200)
+const anosDisponibles = computed(() =>
+  [...new Set(props.datos.map(d => d.ano).filter(Boolean))].sort()
 )
 
-// Datos calculados para la gráfica
-const chartData = computed(() => {
-  const chartWidth = 980 // 1070 - 90 (margen izquierdo)
-  const chartHeight = 220 // 260 - 40 (márgenes)
-  const startX = 100
-  const startY = 40
-  const count = datosPorMunicipio.value.length
-  const spacing = chartWidth / (count - 1 || 1)
-  
-  return datosPorMunicipio.value.map((municipio, index) => {
-    const x = startX + (index * spacing)
-    const y = startY + chartHeight - (municipio.disponible / maxDisponible.value * chartHeight)
-    return {
-      ...municipio,
-      x,
-      y
-    }
+const metodosDisponibles = computed(() =>
+  [...new Set(props.datos.map(d => d.tipoMetodo).filter(Boolean))].sort()
+)
+
+const ordenMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+const mesesOrdenados = computed(() => {
+  const presentes = new Set(props.datos.map(d => d.mes).filter(Boolean))
+  return ordenMeses.filter(m => presentes.has(m))
+})
+
+// Datos filtrados
+const datosFiltrados = computed(() => {
+  return props.datos.filter(item => {
+    if (filtroRISS.value && item.RISS !== filtroRISS.value) return false
+    if (filtroMunicipio.value && item.municipio !== filtroMunicipio.value) return false
+    if (filtroAno.value && item.ano !== Number(filtroAno.value)) return false
+    if (filtroMes.value && item.mes !== filtroMes.value) return false
+    if (filtroMetodo.value && item.tipoMetodo !== filtroMetodo.value) return false
+    return true
   })
 })
 
-// Puntos para la línea
-const linePoints = computed(() => {
-  return chartData.value.map(d => `${d.x},${d.y}`).join(' ')
+// Resumen
+const totalConsumo = computed(() =>
+  datosFiltrados.value.reduce((sum, d) => sum + (d.consumo || 0), 0)
+)
+
+const establecimientosUnicos = computed(() =>
+  new Set(datosFiltrados.value.map(d => d.nombreES)).size
+)
+
+// Consumo agrupado por método (solo con consumo > 0), ordenado de mayor a menor
+const consumoPorMetodo = computed(() => {
+  const grupos = {}
+  datosFiltrados.value.forEach(item => {
+    if (!grupos[item.tipoMetodo]) {
+      grupos[item.tipoMetodo] = { nombre: item.tipoMetodo, codigo: item.codigo, consumo: 0 }
+    }
+    grupos[item.tipoMetodo].consumo += item.consumo || 0
+  })
+  return Object.values(grupos)
+    .filter(m => m.consumo > 0)
+    .sort((a, b) => b.consumo - a.consumo)
 })
 
-// Puntos para el área bajo la línea
-const areaPoints = computed(() => {
-  const points = chartData.value.map(d => `${d.x},${d.y}`)
-  const firstX = chartData.value[0]?.x || 100
-  const lastX = chartData.value[chartData.value.length - 1]?.x || 1060
-  return `${firstX},260 ${points.join(' ')} ${lastX},260`
-})
+const metodosConConsumo = computed(() => consumoPorMetodo.value)
+
+const maxConsumo = computed(() =>
+  consumoPorMetodo.value.length > 0 ? consumoPorMetodo.value[0].consumo : 0
+)
 </script>
+
+<style scoped>
+.filtro-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+  padding-right: 2.5rem;
+}
+</style>

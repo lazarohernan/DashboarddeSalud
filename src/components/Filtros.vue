@@ -1,104 +1,106 @@
 <template>
-  <div class="filtros-container border border-gray-300 p-6 rounded-lg">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div class="filtros-container border border-gray-200 px-6 py-4 rounded-lg bg-white">
+    <div class="flex items-end gap-4 flex-wrap">
+
       <!-- Departamento -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          <MapPin class="inline-block w-4 h-4 mr-1" />
+      <div v-if="!ocultarEstablecimiento" class="flex-1 min-w-[150px]">
+        <label class="block text-xs font-medium text-gray-500 mb-1.5">
+          <MapPin class="inline-block w-3.5 h-3.5 mr-1" />
           Departamento
         </label>
-        <select 
+        <select
           :value="departamentoSeleccionado"
           @change="$emit('update:departamento', $event.target.value)"
           class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
-          <option value="">Todos los departamentos</option>
-          <option 
-            v-for="dept in departamentosUnicos" 
-            :key="dept" 
-            :value="dept"
-          >
-            {{ dept }}
-          </option>
+          <option value="">Todos</option>
+          <option v-for="dept in departamentosUnicos" :key="dept" :value="dept">{{ dept }}</option>
         </select>
       </div>
 
       <!-- Municipio -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          <MapPin class="inline-block w-4 h-4 mr-1" />
+      <div v-if="!ocultarEstablecimiento" class="flex-1 min-w-[150px]">
+        <label class="block text-xs font-medium text-gray-500 mb-1.5">
+          <MapPin class="inline-block w-3.5 h-3.5 mr-1" />
           Municipio
         </label>
-        <select 
+        <select
           :value="municipioSeleccionado"
           @change="$emit('update:municipio', $event.target.value)"
           class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
-          <option value="">Todos los municipios</option>
-          <option 
-            v-for="mun in municipiosFiltrados" 
-            :key="mun" 
-            :value="mun"
-          >
-            {{ mun }}
-          </option>
+          <option value="">Todos</option>
+          <option v-for="mun in municipiosFiltrados" :key="mun" :value="mun">{{ mun }}</option>
         </select>
       </div>
 
       <!-- Comunidad -->
-      <div v-if="mostrarComunidad">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          <MapPin class="inline-block w-4 h-4 mr-1" />
+      <div v-if="mostrarComunidad" class="flex-1 min-w-[150px]">
+        <label class="block text-xs font-medium text-gray-500 mb-1.5">
+          <MapPin class="inline-block w-3.5 h-3.5 mr-1" />
           Comunidad
         </label>
-        <select 
+        <select
           :value="comunidadSeleccionada"
           @change="$emit('update:comunidad', $event.target.value)"
           class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
-          <option value="">Todas las comunidades</option>
-          <option 
-            v-for="com in comunidadesFiltradas" 
-            :key="com" 
-            :value="com"
-          >
-            {{ com }}
-          </option>
+          <option value="">Todas</option>
+          <option v-for="com in comunidadesFiltradas" :key="com" :value="com">{{ com }}</option>
+        </select>
+      </div>
+
+      <!-- Fondo -->
+      <div v-if="mostrarFondo" class="flex-1 min-w-[140px]">
+        <label class="block text-xs font-medium text-gray-500 mb-1.5">
+          <Building class="inline-block w-3.5 h-3.5 mr-1" />
+          Fondo
+        </label>
+        <select
+          :value="fondoSeleccionado"
+          @change="$emit('update:fondo', $event.target.value)"
+          class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
+        >
+          <option value="">Todos</option>
+          <option value="Irlanda">Irlanda</option>
+          <option value="Luxemburgo">Luxemburgo</option>
         </select>
       </div>
 
       <!-- Tipo de Establecimiento -->
-      <div v-if="!soloDepartamentoMunicipio">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          <Building class="inline-block w-4 h-4 mr-1" />
+      <div v-if="!soloDepartamentoMunicipio && !ocultarEstablecimiento" class="flex-1 min-w-[160px]">
+        <label class="block text-xs font-medium text-gray-500 mb-1.5">
+          <Building class="inline-block w-3.5 h-3.5 mr-1" />
           Tipo de Establecimiento
         </label>
-
-        <!-- Selector para tipos de establecimiento -->
         <select
           :value="tipoEstablecimientoSeleccionado"
           @change="$emit('update:tipoEstablecimiento', $event.target.value)"
           class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
-          <option value="">Todos los tipos</option>
-          <option
-            v-for="tipo in tiposEstablecimientoUnicos"
-            :key="tipo"
-            :value="tipo"
-          >
-            {{ tipo }}
-          </option>
+          <option value="">Todos</option>
+          <option v-for="tipo in tiposEstablecimientoUnicos" :key="tipo" :value="tipo">{{ tipo }}</option>
         </select>
       </div>
+
+      <!-- Botón reset -->
+      <div class="flex items-end pb-0.5">
+        <button
+          @click="$emit('reset')"
+          title="Limpiar filtros"
+          class="p-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:text-orange-600 hover:border-orange-400 transition-all duration-200"
+        >
+          <RotateCcw class="w-4 h-4" />
+        </button>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { MapPin, Building } from 'lucide-vue-next'
+import { MapPin, Building, RotateCcw } from 'lucide-vue-next'
 import { departamentos, municipios, tiposEstablecimiento } from '../data/catalogosCompletos'
 
 const props = defineProps({
@@ -110,9 +112,14 @@ const props = defineProps({
   municipioSeleccionado: String,
   comunidadSeleccionada: String,
   tipoEstablecimientoSeleccionado: String,
+  fondoSeleccionado: String,
   mostrarComunidad: {
     type: Boolean,
     default: true
+  },
+  mostrarFondo: {
+    type: Boolean,
+    default: false
   },
   soloTiposEstandares: {
     type: Boolean,
@@ -121,10 +128,14 @@ const props = defineProps({
   soloDepartamentoMunicipio: {
     type: Boolean,
     default: false
+  },
+  ocultarEstablecimiento: {
+    type: Boolean,
+    default: false
   }
 })
 
-defineEmits(['update:departamento', 'update:municipio', 'update:comunidad', 'update:tipoEstablecimiento'])
+defineEmits(['update:departamento', 'update:municipio', 'update:comunidad', 'update:tipoEstablecimiento', 'update:fondo', 'reset'])
 
 // Usar catálogos como fuente de verdad para departamentos
 const departamentosUnicos = computed(() => {
@@ -211,7 +222,6 @@ const tiposEstablecimientoUnicos = computed(() => {
 
 /* Mejorar apariencia del contenedor de filtros */
 .filtros-container {
-  background: #fafafa;
   border-radius: 0.5rem;
 }
 

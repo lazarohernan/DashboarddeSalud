@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <header class="border-b border-gray-300 py-4 px-6">
+  <div class="min-h-screen">
+    <header class="bg-white border-b border-gray-200 py-4 px-6">
       <h1 class="text-2xl font-bold text-gray-900">Proyecto No Dejar A Nadie Atrás</h1>
       <p class="text-sm text-gray-600 mt-1">Sistema de Monitoreo y Seguimiento</p>
     </header>
 
-    <main class="p-6">
+    <main class="p-6 space-y-4">
       <Navegacion @opcion-seleccionada="handleOpcionSeleccionada" />
       
       <!-- Filtros para Estándares de Calidad -->
@@ -22,22 +22,22 @@
         @update:municipio="handleMunicipioChange"
         @update:comunidad="handleComunidadChange"
         @update:tipoEstablecimiento="handleTipoEstablecimientoChange"
+        @reset="limpiarFiltros"
       />
 
-      <!-- Filtros para Outputs y Provision (con comunidad) -->
+      <!-- Filtros para Outputs — solo Fondo (datos nacionales, no por establecimiento) -->
       <Filtros
-        v-if="opcionActiva === 'outputs' || opcionActiva === 'provision'"
+        v-if="opcionActiva === 'outputs'"
         :datos-completos="datosCompletosSeccion"
-        :departamento-seleccionado="departamentoSeleccionado"
-        :municipio-seleccionado="municipioSeleccionado"
-        :comunidad-seleccionada="comunidadSeleccionada"
-        :tipo-establecimiento-seleccionado="tipoEstablecimientoSeleccionado"
-        :mostrar-comunidad="true"
-        @update:departamento="handleDepartamentoChange"
-        @update:municipio="handleMunicipioChange"
-        @update:comunidad="handleComunidadChange"
-        @update:tipoEstablecimiento="handleTipoEstablecimientoChange"
+        :fondo-seleccionado="fondoSeleccionado"
+        :mostrar-comunidad="false"
+        :mostrar-fondo="true"
+        :solo-departamento-municipio="false"
+        :ocultar-establecimiento="true"
+        @reset="limpiarFiltros"
+        @update:fondo="handleFondoChange"
       />
+
 
       <!-- Filtros para Indicadores -->
       <Filtros
@@ -62,38 +62,9 @@
         @update:departamento="handleDepartamentoChange"
         @update:municipio="handleMunicipioChange"
         @update:tipoEstablecimiento="handleTipoEstablecimientoChange"
+        @reset="limpiarFiltros"
       />
 
-      <!-- Indicador de filtros activos -->
-      <div v-if="opcionActiva !== 'inicio' && (departamentoSeleccionado || municipioSeleccionado || comunidadSeleccionada || metodoSeleccionado || tipoEstablecimientoSeleccionado)" 
-           class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <Filter class="w-4 h-4 text-orange-600" />
-            <span class="text-sm font-medium text-orange-800">Filtros activos:</span>
-            <div class="flex gap-2 flex-wrap">
-              <span v-if="departamentoSeleccionado" class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">
-                {{ departamentoSeleccionado }}
-              </span>
-              <span v-if="municipioSeleccionado" class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">
-                {{ municipioSeleccionado }}
-              </span>
-              <span v-if="comunidadSeleccionada" class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">
-                {{ comunidadSeleccionada }}
-              </span>
-              <span v-if="metodoSeleccionado" class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">
-                {{ metodosAnticonceptivos.find(m => m.id === metodoSeleccionado)?.nombre }}
-              </span>
-              <span v-if="tipoEstablecimientoSeleccionado" class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">
-                {{ tipoEstablecimientoSeleccionado }}
-              </span>
-            </div>
-          </div>
-          <button @click="limpiarFiltros" class="text-xs text-orange-600 hover:text-orange-800 font-medium">
-            Limpiar todos
-          </button>
-        </div>
-      </div>
 
       <div class="mt-8 space-y-8">
         <!-- Inicio -->
@@ -152,7 +123,6 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Filter } from 'lucide-vue-next'
 import Navegacion from './components/Navegacion.vue'
 import Filtros from './components/Filtros.vue'
 import Inicio from './views/Inicio.vue'
@@ -160,15 +130,7 @@ import EstandaresView from './views/EstandaresView.vue'
 import OutputsView from './views/OutputsView.vue'
 import ProvisionView from './views/ProvisionView.vue'
 import IndicadoresView from './views/IndicadoresView.vue'
-import {
-  departamentos,
-  municipios,
-  establecimientos,
-  estandaresCalidad,
-  provisionAnticonceptivos,
-  tiposEstablecimiento,
-  metodosAnticonceptivos
-} from './data/mockData'
+import { estandaresCalidad } from './data/mockData'
 import { resultados } from './data/resultados'
 import { provisionAnticonceptivos as provisionReal } from './data/provisionAnticonceptivos'
 
@@ -178,6 +140,7 @@ const municipioSeleccionado = ref('')
 const comunidadSeleccionada = ref('')
 const metodoSeleccionado = ref(null)
 const tipoEstablecimientoSeleccionado = ref('')
+const fondoSeleccionado = ref('')
 
 const handleOpcionSeleccionada = (opcion) => {
   opcionActiva.value = opcion
@@ -236,34 +199,14 @@ const resultadosFiltrados = computed(() => {
     filtrados = filtrados.filter(r => r.tipoEstablecimiento === tipoEstablecimientoSeleccionado.value)
   }
 
-  return filtrados
-})
-
-const provisionAnticonceptivosFiltrados = computed(() => {
-  let filtrados = provisionReal
-
-  if (departamentoSeleccionado.value) {
-    filtrados = filtrados.filter(p => p.departamento === departamentoSeleccionado.value)
-  }
-
-  if (municipioSeleccionado.value) {
-    filtrados = filtrados.filter(p => p.municipio === municipioSeleccionado.value)
-  }
-
-  if (comunidadSeleccionada.value) {
-    filtrados = filtrados.filter(p => p.comunidad === comunidadSeleccionada.value)
-  }
-
-  if (tipoEstablecimientoSeleccionado.value) {
-    filtrados = filtrados.filter(p => p.tipoEstablecimiento === tipoEstablecimientoSeleccionado.value)
-  }
-
-  if (metodoSeleccionado.value) {
-    filtrados = filtrados.filter(p => p.metodo === metodoSeleccionado.value)
+  if (fondoSeleccionado.value) {
+    filtrados = filtrados.filter(r => r.fondo === fondoSeleccionado.value)
   }
 
   return filtrados
 })
+
+const provisionAnticonceptivosFiltrados = computed(() => provisionReal)
 
 const handleDepartamentoChange = (valor) => {
   departamentoSeleccionado.value = valor || ''
@@ -284,13 +227,13 @@ const handleComunidadChange = (valor) => {
   comunidadSeleccionada.value = valor || ''
 }
 
-const handleMetodoChange = (id) => {
-  metodoSeleccionado.value = id
-}
-
 const handleTipoEstablecimientoChange = (tipo) => {
   tipoEstablecimientoSeleccionado.value = tipo || ''
   metodoSeleccionado.value = null
+}
+
+const handleFondoChange = (valor) => {
+  fondoSeleccionado.value = valor || ''
 }
 
 const limpiarFiltros = () => {
@@ -299,5 +242,6 @@ const limpiarFiltros = () => {
   comunidadSeleccionada.value = ''
   metodoSeleccionado.value = null
   tipoEstablecimientoSeleccionado.value = ''
+  fondoSeleccionado.value = ''
 }
 </script>

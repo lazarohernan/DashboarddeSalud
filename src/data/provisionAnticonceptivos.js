@@ -1,16 +1,6 @@
-import provisionData from './provisionAnticonceptivos.json'
+// provisionAnticonceptivos.js
+// Fuente de datos real: "Métodos LNOB.xlsx" — hoja "Métodos LNOB"
+// Reemplaza el JSON anterior (datos de prueba con nombres genéricos)
+// Redirige a provision_lnob.js como fuente única de verdad
 
-export const provisionAnticonceptivos = provisionData.datos.map(item => ({
-  id: item.id,
-  nivel: item.nivel,
-  departamento: item.departamento,
-  municipio: item.municipio,
-  comunidad: item.comunidad,
-  establecimientoNombre: item.establecimientoNombre,
-  tipoEstablecimiento: item.tipoEstablecimiento,
-  codMetodo: item.codMetodo,
-  metodo: item.metodo,
-  transaccion: item.transaccion,
-  cantidad: item.cantidad,
-  fecha: item.fecha
-}));
+export { provisionLNOB as provisionAnticonceptivos } from './provision_lnob.js'

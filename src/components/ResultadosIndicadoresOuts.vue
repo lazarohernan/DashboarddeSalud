@@ -6,7 +6,7 @@
       </label>
       <div class="flex flex-wrap items-center gap-3">
         <button
-          v-for="ano in [1, 2, 3]"
+          v-for="ano in [2023, 2024, 2025, 2026, 2027]"
           :key="ano"
           @click="seleccionarAno(ano)"
           :class="[
@@ -17,7 +17,7 @@
               : 'bg-transparent text-orange-600 border-orange-300 hover:bg-orange-50 hover:border-orange-400'
           ]"
         >
-          Año {{ ano }}
+          {{ ano }}
         </button>
         <button
           @click="limpiarSeleccion"

@@ -8,8 +8,8 @@
         'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
         'border-2 cursor-pointer',
         opcionActiva === opcion.id
-          ? 'bg-orange-500 text-white border-orange-500 shadow-md'
-          : 'bg-transparent text-orange-600 border-orange-300 hover:bg-orange-50 hover:border-orange-400'
+          ? 'bg-slate-700 text-orange-400 border-slate-700 shadow-md'
+          : 'bg-slate-700 text-white border-slate-700 hover:text-orange-400'
       ]"
     >
       {{ opcion.nombre }}
