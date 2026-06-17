@@ -1,17 +1,79 @@
 <template>
   <div class="min-h-screen">
     <header class="bg-white border-b border-gray-200 py-4 px-6">
-      <h1 class="text-2xl font-bold text-gray-900">Proyecto No Dejar A Nadie Atrás</h1>
-      <p class="text-sm text-gray-600 mt-1">Sistema de Monitoreo y Seguimiento</p>
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Proyecto No Dejar A Nadie Atrás</h1>
+          <p class="text-sm text-gray-600 mt-1">Sistema de Monitoreo y Seguimiento</p>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+          <template v-if="authLoading">
+            <span class="text-sm text-gray-500">Cargando...</span>
+          </template>
+          <template v-else-if="isAuthenticated">
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded-full">
+              <ShieldCheck class="w-4 h-4 text-orange-600" />
+              <span class="text-sm font-medium text-gray-800">{{ displayName }}</span>
+            </div>
+            <button
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              @click="handleCerrarSesion"
+            >
+              Cerrar sesión
+            </button>
+          </template>
+          <button
+            v-else
+            type="button"
+            class="px-4 py-2 text-sm font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-800 transition-colors"
+            @click="mostrarLogin = true"
+          >
+            Ingresar
+          </button>
+        </div>
+      </div>
     </header>
 
     <main class="p-6 space-y-4">
-      <Navegacion @opcion-seleccionada="handleOpcionSeleccionada" />
+      <LoginView
+        v-if="mostrarLogin"
+        @login-exitoso="handleLoginExitoso"
+        @volver="mostrarLogin = false"
+      />
+
+      <template v-else>
+      <div
+        v-if="datosLoading"
+        class="flex items-center justify-center gap-3 py-16 text-gray-600"
+      >
+        <span class="inline-block w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+        <span>Cargando datos del proyecto...</span>
+      </div>
+
+      <div
+        v-else-if="datosError"
+        class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800"
+      >
+        <p>{{ datosError }}</p>
+        <button
+          type="button"
+          class="mt-2 text-sm font-medium text-red-700 underline hover:text-red-900"
+          @click="recargarDatos"
+        >
+          Reintentar
+        </button>
+      </div>
+
+      <template v-else>
+      <Navegacion :is-admin="isAdmin" @opcion-seleccionada="handleOpcionSeleccionada" />
       
       <!-- Filtros para Estándares de Calidad -->
       <Filtros
         v-if="opcionActiva === 'estandares'"
         :datos-completos="estandaresCalidad"
+        :catalogos="catalogos"
         :departamento-seleccionado="departamentoSeleccionado"
         :municipio-seleccionado="municipioSeleccionado"
         :comunidad-seleccionada="comunidadSeleccionada"
@@ -29,6 +91,7 @@
       <Filtros
         v-if="opcionActiva === 'outputs'"
         :datos-completos="datosCompletosSeccion"
+        :catalogos="catalogos"
         :fondo-seleccionado="fondoSeleccionado"
         :mostrar-comunidad="false"
         :mostrar-fondo="true"
@@ -43,6 +106,7 @@
       <Filtros
         v-if="opcionActiva === 'indicadores'"
         :datos-completos="[]"
+        :catalogos="catalogos"
         :departamento-seleccionado="departamentoSeleccionado"
         :municipio-seleccionado="municipioSeleccionado"
         :mostrar-comunidad="false"
@@ -55,6 +119,7 @@
       <Filtros
         v-if="opcionActiva !== 'inicio' && opcionActiva !== 'estandares' && opcionActiva !== 'outputs' && opcionActiva !== 'provision' && opcionActiva !== 'indicadores'"
         :datos-completos="datosCompletosSeccion"
+        :catalogos="catalogos"
         :departamento-seleccionado="departamentoSeleccionado"
         :municipio-seleccionado="municipioSeleccionado"
         :tipo-establecimiento-seleccionado="tipoEstablecimientoSeleccionado"
@@ -68,7 +133,7 @@
 
       <div class="mt-8 space-y-8">
         <!-- Inicio -->
-        <Inicio v-if="opcionActiva === 'inicio'" />
+        <Inicio v-if="opcionActiva === 'inicio'" :outputs="outputs" />
 
         <!-- Estándares de Calidad -->
         <EstandaresView 
@@ -93,8 +158,23 @@
           v-if="opcionActiva === 'indicadores'"
           :departamento-seleccionado="departamentoSeleccionado"
           :municipio-seleccionado="municipioSeleccionado"
+          :indicadores-kpi="indicadoresKpi"
+          :provision="provisionAnticonceptivos"
+          :estandares="estandaresCalidadFiltrados"
         />
+
+        <!-- Panel de Administración (solo admin) -->
+        <AdminView v-if="opcionActiva === 'admin' && isAdmin" />
+        <div
+          v-else-if="opcionActiva === 'admin' && !isAdmin"
+          class="rounded-lg border border-red-200 bg-red-50 px-6 py-10 text-center text-red-700"
+        >
+          <p class="font-semibold">Acceso restringido</p>
+          <p class="text-sm mt-1">Debes iniciar sesión como administrador para acceder a este panel.</p>
+        </div>
       </div>
+      </template>
+      </template>
     </main>
 
     <!-- Footer con logos -->
@@ -122,7 +202,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { ShieldCheck } from 'lucide-vue-next'
 import Navegacion from './components/Navegacion.vue'
 import Filtros from './components/Filtros.vue'
 import Inicio from './views/Inicio.vue'
@@ -130,10 +211,25 @@ import EstandaresView from './views/EstandaresView.vue'
 import OutputsView from './views/OutputsView.vue'
 import ProvisionView from './views/ProvisionView.vue'
 import IndicadoresView from './views/IndicadoresView.vue'
-import { estandaresCalidad } from './data/mockData'
-import { resultados } from './data/resultados'
-import { provisionAnticonceptivos as provisionReal } from './data/provisionAnticonceptivos'
+import LoginView from './views/LoginView.vue'
+import AdminView from './views/admin/AdminView.vue'
+import { useAuth } from './composables/useAuth'
+import { useDashboardData } from './composables/useDashboardData'
 
+const { initAuth, signOut, loading: authLoading, isAuthenticated, isAdmin, displayName } = useAuth()
+const {
+  resultados,
+  provision: provisionAnticonceptivos,
+  estandares: estandaresCalidad,
+  indicadoresKpi,
+  catalogos,
+  outputs,
+  loading: datosLoading,
+  error: datosError,
+  recargar: recargarDatos
+} = useDashboardData()
+
+const mostrarLogin = ref(false)
 const opcionActiva = ref('inicio')
 const departamentoSeleccionado = ref('')
 const municipioSeleccionado = ref('')
@@ -148,14 +244,13 @@ const handleOpcionSeleccionada = (opcion) => {
 
 // Datos completos para la sección actual
 const datosCompletosSeccion = computed(() => {
-  if (opcionActiva.value === 'outputs') return resultados
-  if (opcionActiva.value === 'provision') return provisionReal
+  if (opcionActiva.value === 'outputs') return resultados.value
+  if (opcionActiva.value === 'provision') return provisionAnticonceptivos.value
   return []
 })
 
-// Filtrado de estándares de calidad directamente desde los datos del CSV
 const estandaresCalidadFiltrados = computed(() => {
-  let filtrados = estandaresCalidad
+  let filtrados = estandaresCalidad.value
   
   // Filtro por departamento
   if (departamentoSeleccionado.value) {
@@ -181,7 +276,7 @@ const estandaresCalidadFiltrados = computed(() => {
 })
 
 const resultadosFiltrados = computed(() => {
-  let filtrados = resultados
+  let filtrados = resultados.value
 
   if (departamentoSeleccionado.value) {
     filtrados = filtrados.filter(r => r.departamento === departamentoSeleccionado.value)
@@ -206,7 +301,7 @@ const resultadosFiltrados = computed(() => {
   return filtrados
 })
 
-const provisionAnticonceptivosFiltrados = computed(() => provisionReal)
+const provisionAnticonceptivosFiltrados = computed(() => provisionAnticonceptivos.value)
 
 const handleDepartamentoChange = (valor) => {
   departamentoSeleccionado.value = valor || ''
@@ -243,5 +338,20 @@ const limpiarFiltros = () => {
   metodoSeleccionado.value = null
   tipoEstablecimientoSeleccionado.value = ''
   fondoSeleccionado.value = ''
+}
+
+onMounted(() => {
+  initAuth()
+})
+
+const handleLoginExitoso = () => {
+  mostrarLogin.value = false
+  opcionActiva.value = 'inicio'
+}
+
+const handleCerrarSesion = async () => {
+  await signOut()
+  mostrarLogin.value = false
+  opcionActiva.value = 'inicio'
 }
 </script>

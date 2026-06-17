@@ -51,55 +51,19 @@
       </h3>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Output 1 -->
-        <div class="bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-delay-1">
+        <div
+          v-for="(output, index) in outputsMostrados"
+          :key="output.codigo"
+          :class="[
+            'bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1',
+            `animate-fade-in-delay-${Math.min(index + 1, 4)}`
+          ]"
+        >
           <div class="flex items-center gap-3 mb-2">
-            <BookOpen class="w-5 h-5 text-orange-600" />
-            <h4 class="text-lg font-bold text-gray-800">Output 1</h4>
+            <component :is="iconosOutput[index]" class="w-5 h-5 text-orange-600" />
+            <h4 class="text-lg font-bold text-gray-800">Output {{ output.codigo }}</h4>
           </div>
-          <p class="text-gray-700">
-            Fortalecimiento de la educación sexual integral dentro y fuera de la escuela para adolescentes, 
-            niñas y jóvenes de comunidades afrodescendientes, criollas, garífunas y miskitas en municipios seleccionados 
-            de la Costa Caribe centroamericana.
-          </p>
-        </div>
-
-        <!-- Output 2 -->
-        <div class="bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-delay-2">
-          <div class="flex items-center gap-3 mb-2">
-            <Stethoscope class="w-5 h-5 text-orange-600" />
-            <h4 class="text-lg font-bold text-gray-800">Output 2</h4>
-          </div>
-          <p class="text-gray-700">
-            Mejorar de la cobertura y acceso a servicios de salud sexual y reproductiva de alta calidad 
-            para adolescentes y jóvenes de comunidades afrodescendientes, criollas, garífunas y miskitas en municipios 
-            seleccionados de la Costa Caribe centroamericana.
-          </p>
-        </div>
-
-        <!-- Output 3 -->
-        <div class="bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-delay-3">
-          <div class="flex items-center gap-3 mb-2">
-            <Users class="w-5 h-5 text-orange-600" />
-            <h4 class="text-lg font-bold text-gray-800">Output 3</h4>
-          </div>
-          <p class="text-gray-700">
-            Aumentar las capacidades de liderazgo y empoderamiento de mujeres y jóvenes de comunidades 
-            afrodescendientes, criollas, garífunas y miskitas para abogar por el cumplimiento de sus derechos, 
-            incluyendo la salud y los derechos sexuales y reproductivos.
-          </p>
-        </div>
-
-        <!-- Output 4 -->
-        <div class="bg-white border border-gray-300 rounded-lg p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-delay-4">
-          <div class="flex items-center gap-3 mb-2">
-            <BarChart3 class="w-5 h-5 text-orange-600" />
-            <h4 class="text-lg font-bold text-gray-800">Output 4</h4>
-          </div>
-          <p class="text-gray-700">
-            Contar con una Línea de base, seguimiento y evaluación para medir el impacto y progreso 
-            del proyecto en las comunidades objetivo.
-          </p>
+          <p class="text-gray-700">{{ output.nombre }}</p>
         </div>
       </div>
     </div>
@@ -112,10 +76,30 @@
 </template>
 
 <script setup>
-// Vista de inicio con información del proyecto - animaciones sutiles y distribución atractiva
+import { computed } from 'vue'
 import { Target, Trophy, BookOpen, Stethoscope, Users, BarChart3 } from 'lucide-vue-next'
 import Carrusel from '../components/Carrusel.vue'
 import MapaHonduras from '../components/MapaHonduras.vue'
+
+const props = defineProps({
+  outputs: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const iconosOutput = [BookOpen, Stethoscope, Users, BarChart3]
+
+const outputsFallback = [
+  { codigo: 1, nombre: 'Fortalecimiento de la educación sexual integral dentro y fuera de la escuela.' },
+  { codigo: 2, nombre: 'Mejorar la cobertura y acceso a servicios de salud sexual y reproductiva de alta calidad.' },
+  { codigo: 3, nombre: 'Aumentar las capacidades de liderazgo y empoderamiento de mujeres y jóvenes.' },
+  { codigo: 4, nombre: 'Contar con una línea de base, seguimiento y evaluación del proyecto.' }
+]
+
+const outputsMostrados = computed(() =>
+  props.outputs.length ? props.outputs : outputsFallback
+)
 </script>
 
 <style scoped>

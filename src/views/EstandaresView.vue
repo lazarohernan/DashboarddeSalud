@@ -2,7 +2,7 @@
   <section class="border border-gray-200 p-6 rounded-lg bg-white">
     <div class="flex items-center gap-2 mb-4">
       <ClipboardCheck class="w-5 h-5 text-gray-700" />
-      <h2 class="text-lg font-semibold text-gray-900">Autodiagnóstico</h2>
+      <h2 class="text-lg font-semibold text-gray-900">Autodiagnóstico <span class="font-normal text-gray-500">(ECA)</span></h2>
       <span class="text-xs text-gray-500">(Solo Establecimientos de Salud)</span>
     </div>
 
@@ -153,7 +153,7 @@
         </thead>
         <tbody>
             <tr
-              v-for="item in datosMostrados"
+              v-for="item in datosTablaPaginados"
               :key="item.id"
               @click="mostrarDetalleEje(item)"
               class="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
@@ -190,6 +190,13 @@
           </tbody>
         </table>
 
+        <Pagination
+          v-if="datosMostrados.length > 0"
+          v-model:page="page"
+          v-model:page-size="pageSize"
+          :total="total"
+        />
+
         <!-- Resumen General -->
         <div class="mt-4 pt-4 border-t border-gray-300">
           <div class="flex gap-8 text-sm">
@@ -221,9 +228,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ClipboardCheck, Check, X, MapPin } from 'lucide-vue-next'
 import TarjetasEjes from '../components/TarjetasEjes.vue'
+import Pagination from '../components/Pagination.vue'
+import { usePagination } from '../composables/usePagination'
 
 const props = defineProps({
   datos: {
@@ -241,11 +250,21 @@ const filaSeleccionada = ref(null)
 // Filtrar datos por eje seleccionado
 const datosMostrados = computed(() => {
   if (ejeSeleccionado.value === null) {
-    // Si no hay eje seleccionado, mostrar todos los datos
     return props.datos
   }
-  // Filtrar por el eje seleccionado (comparar como string para evitar problemas de tipo)
   return props.datos.filter(item => String(item.codEje) === String(ejeSeleccionado.value))
+})
+
+const {
+  page,
+  pageSize,
+  total,
+  paginatedItems: datosTablaPaginados,
+  reiniciar: reiniciarPaginacion
+} = usePagination(datosMostrados, { pageSize: 25 })
+
+watch(ejeSeleccionado, () => {
+  reiniciarPaginacion()
 })
 
 // Manejador para cuando se selecciona un eje

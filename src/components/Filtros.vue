@@ -62,8 +62,7 @@
           class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 hover:border-gray-400"
         >
           <option value="">Todos</option>
-          <option value="Irlanda">Irlanda</option>
-          <option value="Luxemburgo">Luxemburgo</option>
+          <option v-for="fondo in fondosDisponibles" :key="fondo" :value="fondo">{{ fondo }}</option>
         </select>
       </div>
 
@@ -101,12 +100,20 @@
 <script setup>
 import { computed } from 'vue'
 import { MapPin, Building, RotateCcw } from 'lucide-vue-next'
-import { departamentos, municipios, tiposEstablecimiento } from '../data/catalogosCompletos'
 
 const props = defineProps({
   datosCompletos: {
     type: Array,
     default: () => []
+  },
+  catalogos: {
+    type: Object,
+    default: () => ({
+      departamentos: [],
+      municipios: [],
+      tiposEstablecimiento: [],
+      fondos: []
+    })
   },
   departamentoSeleccionado: String,
   municipioSeleccionado: String,
@@ -139,19 +146,23 @@ defineEmits(['update:departamento', 'update:municipio', 'update:comunidad', 'upd
 
 // Usar catálogos como fuente de verdad para departamentos
 const departamentosUnicos = computed(() => {
-  return departamentos.sort()
+  return [...(props.catalogos.departamentos ?? [])].sort()
 })
 
-// Usar catálogos como fuente de verdad para municipios (filtrados por departamento)
 const municipiosFiltrados = computed(() => {
+  const lista = props.catalogos.municipios ?? []
   if (!props.departamentoSeleccionado) {
-    return municipios.map(m => m.nombre).sort()
+    return lista.map((m) => m.nombre).sort()
   }
-  
-  return municipios
-    .filter(m => m.departamento === props.departamentoSeleccionado)
-    .map(m => m.nombre)
+
+  return lista
+    .filter((m) => m.departamento === props.departamentoSeleccionado)
+    .map((m) => m.nombre)
     .sort()
+})
+
+const fondosDisponibles = computed(() => {
+  return [...(props.catalogos.fondos ?? [])].sort()
 })
 
 // Para comunidades, extraer de datos de estándares ya que no están en el catálogo
@@ -173,11 +184,11 @@ const comunidadesFiltradas = computed(() => {
 
 // Usar catálogos como fuente de verdad para tipos de establecimiento
 const tiposEstablecimientoUnicos = computed(() => {
+  const tipos = props.catalogos.tiposEstablecimiento ?? []
   if (props.soloTiposEstandares) {
-    // Solo mostrar CIS y UAPS para la vista de estándares
-    return tiposEstablecimiento.filter(tipo => tipo === 'CIS' || tipo === 'UAPS').sort()
+    return tipos.filter((tipo) => tipo === 'CIS' || tipo === 'UAPS').sort()
   }
-  return tiposEstablecimiento.sort()
+  return [...tipos].sort()
 })
 </script>
 

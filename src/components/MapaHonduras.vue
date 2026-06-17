@@ -245,10 +245,6 @@ const construirMapa = async () => {
       features: Object.values(departamentosUnicos)
     }
     
-    // Verificar las propiedades del GeoJSON
-    console.log('GeoJSON cargado:', geojson.features.length, 'polígonos')
-    console.log('Departamentos únicos:', Object.keys(departamentosUnicos).length)
-
     // Crear estilo del mapa con los departamentos
     const estilo = {
       version: 8,
@@ -352,7 +348,6 @@ const construirMapa = async () => {
 
     // Confirmar carga del mapa
     map.on('load', () => {
-      console.log('Mapa de Honduras cargado correctamente')
       agregarMarcadoresMunicipios()
       agregarInteractividadDepartamentos()
     })
@@ -375,8 +370,6 @@ const validarCoordenadas = (lng, lat) => {
 
 // Función para agregar marcadores de municipios LNOB
 const agregarMarcadoresMunicipios = () => {
-  console.log('Agregando marcadores de municipios LNOB...')
-  
   municipiosLNOB.forEach((municipio, index) => {
     const [lng, lat] = municipio.coordenadas
     
@@ -437,8 +430,6 @@ const agregarMarcadoresMunicipios = () => {
       })
     })
   })
-  
-  console.log('Marcadores agregados correctamente')
 }
 
 // Función para agregar interactividad a los departamentos

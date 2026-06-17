@@ -1,7 +1,7 @@
 <template>
   <!-- Sección de Resultados de Indicadores (Fuera del contenedor de la tabla) -->
   <div class="border border-gray-200 p-6 rounded-lg bg-white mb-6">
-    <h3 class="text-base font-semibold text-gray-900 mb-4">Resultados de Indicadores</h3>
+    <h3 class="text-base font-semibold text-gray-900 mb-4">Resultados de Indicadores <span class="text-sm font-normal text-gray-500">(LNOB)</span></h3>
     <ResultadosIndicadoresOuts 
       @ano-seleccionado="handleAnoSeleccionado"
       @limpiar-seleccion="handleLimpiarSeleccion"
@@ -191,7 +191,7 @@
             </thead>
             <tbody>
               <tr
-                v-for="item in outputGrupo.items"
+                v-for="item in itemsPaginados(outputGrupo.items, codOutputTabla)"
                 :key="item.id"
                 class="hover:bg-gray-50 border-b border-gray-100"
               >
@@ -251,6 +251,15 @@
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          v-if="outputGrupo.items.length > tamanoPaginaOutput"
+          :page="paginaOutput(codOutputTabla)"
+          :page-size="tamanoPaginaOutput"
+          :total="outputGrupo.items.length"
+          :mostrar-tamano="false"
+          @update:page="(p) => establecerPaginaOutput(codOutputTabla, p)"
+        />
       </div>
 
       <!-- Resumen por estado -->
@@ -347,6 +356,7 @@ import {
   AlertCircle
 } from 'lucide-vue-next'
 import ResultadosIndicadoresOuts from '../components/ResultadosIndicadoresOuts.vue'
+import Pagination from '../components/Pagination.vue'
 
 const props = defineProps({
   datos: {
@@ -360,6 +370,26 @@ const anoSeleccionado = ref(null)
 
 // Output seleccionado (para tarjetas superiores)
 const outputSeleccionado = ref(null)
+
+const tamanoPaginaOutput = 15
+const paginasPorOutput = ref({})
+
+function paginaOutput(codOutput) {
+  return paginasPorOutput.value[codOutput] || 1
+}
+
+function establecerPaginaOutput(codOutput, pagina) {
+  paginasPorOutput.value = {
+    ...paginasPorOutput.value,
+    [codOutput]: pagina
+  }
+}
+
+function itemsPaginados(items, codOutput) {
+  const pagina = paginaOutput(codOutput)
+  const inicio = (pagina - 1) * tamanoPaginaOutput
+  return items.slice(inicio, inicio + tamanoPaginaOutput)
+}
 
 // Datos agrupados por Output
 const datosPorOutput = computed(() => {

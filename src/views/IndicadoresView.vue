@@ -275,6 +275,73 @@
           </div>
         </div>
       </div>
+
+      <div class="bg-white border border-gray-200 rounded-lg p-6 mt-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h3 class="text-base font-semibold text-gray-800">Indicadores LNOB por Output</h3>
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="ano in anosKpi"
+              :key="ano"
+              @click="anoKpiSeleccionado = ano"
+              :class="[
+                'px-3 py-1 text-xs font-medium rounded-full border transition-colors',
+                anoKpiSeleccionado === ano
+                  ? 'bg-orange-500 text-white border-orange-500'
+                  : 'bg-white text-orange-600 border-orange-300 hover:bg-orange-50'
+              ]"
+            >
+              {{ ano }}
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button
+            v-for="(bloque, codOutput) in indicadoresKpi"
+            :key="codOutput"
+            @click="outputKpiSeleccionado = codOutput"
+            :class="[
+              'px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors',
+              outputKpiSeleccionado === codOutput
+                ? 'bg-slate-700 text-orange-400 border-slate-700'
+                : 'bg-white text-gray-700 border-gray-300 hover:border-orange-400'
+            ]"
+          >
+            Output {{ codOutput }}
+          </button>
+        </div>
+
+        <p v-if="bloqueKpiSeleccionado" class="text-xs text-gray-600 mb-4 leading-relaxed">
+          {{ bloqueKpiSeleccionado.nombre }}
+        </p>
+
+        <div v-if="bloqueKpiSeleccionado" class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b-2 border-gray-300">
+                <th class="text-left py-2 px-3 font-semibold text-gray-700">Código</th>
+                <th class="text-left py-2 px-3 font-semibold text-gray-700">Indicador</th>
+                <th class="text-center py-2 px-3 font-semibold text-gray-700">{{ anoKpiSeleccionado }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="ind in bloqueKpiSeleccionado.indicadores"
+                :key="ind.codigo"
+                class="border-b border-gray-200 hover:bg-gray-50"
+              >
+                <td class="py-2 px-3 font-mono text-orange-600">{{ ind.codigo }}</td>
+                <td class="py-2 px-3 text-gray-700">{{ ind.nombre }}</td>
+                <td class="py-2 px-3 text-center font-semibold text-gray-900">
+                  {{ formatearValorKpi(ind.años?.[anoKpiSeleccionado] ?? ind.años?.[String(anoKpiSeleccionado)]) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p v-else class="text-sm text-gray-500">No hay indicadores KPI cargados.</p>
+      </div>
     </div>
 
     <div v-if="pestañaActiva === 'graficos'">
@@ -289,14 +356,14 @@
           <div v-for="municipio in datosPorMunicipio" :key="municipio.nombre" class="space-y-2">
             <div class="flex justify-between items-center">
               <span class="text-sm font-medium text-gray-700">{{ municipio.nombre }}</span>
-              <span class="text-sm text-gray-500">{{ municipio.adolescentes }} adolescentes</span>
+              <span class="text-sm text-gray-500">{{ municipio.consumo }} unidades consumidas</span>
             </div>
             <div class="w-full bg-gray-100 rounded-full h-6 relative overflow-hidden">
               <div 
                 class="h-6 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-700 flex items-center justify-end pr-2"
-                :style="{ width: (municipio.adolescentes / maxAdolescentes * 100) + '%' }"
+                :style="{ width: (municipio.consumo / maxConsumoMunicipio * 100) + '%' }"
               >
-                <span v-if="municipio.adolescentes > 50" class="text-xs text-white font-medium">
+                <span v-if="municipio.consumo > 50" class="text-xs text-white font-medium">
                   {{ municipio.porcentaje }}%
                 </span>
               </div>
@@ -632,7 +699,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { 
   Users, 
   GraduationCap, 
@@ -650,6 +717,12 @@ import {
   AlertTriangle,
   Info
 } from 'lucide-vue-next'
+import {
+  construirTarjetasKpi,
+  derivarDisponibilidadMAC,
+  derivarResumenEstandares,
+  derivarSemaforosMunicipales
+} from '../utils/derivarIndicadores'
 
 const props = defineProps({
   departamentoSeleccionado: {
@@ -659,113 +732,81 @@ const props = defineProps({
   municipioSeleccionado: {
     type: String,
     default: ''
+  },
+  indicadoresKpi: {
+    type: Object,
+    default: () => ({})
+  },
+  provision: {
+    type: Array,
+    default: () => []
+  },
+  estandares: {
+    type: Array,
+    default: () => []
   }
 })
 
-// Control de pestañas
 const pestañaActiva = ref('kpis')
+const anoKpiSeleccionado = ref(2025)
+const outputKpiSeleccionado = ref('1')
+const anosKpi = [2023, 2024, 2025, 2026, 2027]
 
-// Datos mock de indicadores (Meta vs Real)
-const indicadores = computed(() => ({
-  adolescentes: {
-    meta: { total: 2500, hombres: 1200, mujeres: 1300 },
-    real: { total: 1875, hombres: 890, mujeres: 985 },
-    porcentaje: 75
+watch(
+  () => props.indicadoresKpi,
+  (kpi) => {
+    const primero = Object.keys(kpi ?? {})[0]
+    if (primero) outputKpiSeleccionado.value = primero
   },
-  docentes: {
-    meta: { total: 150, hombres: 60, mujeres: 90 },
-    real: { total: 112, hombres: 45, mujeres: 67 },
-    porcentaje: 75
-  },
-  organizaciones: {
-    meta: 25,
-    real: 18,
-    porcentaje: 72
-  },
-  establecimientos: {
-    meta: 35,
-    real: 28,
-    porcentaje: 80
-  },
-  proveedores: {
-    meta: { total: 200, medicos: 50, enfermeras: 80, auxiliares: 50, otros: 20 },
-    real: { total: 156, medicos: 38, enfermeras: 65, auxiliares: 40, otros: 13 },
-    porcentaje: 78
-  },
-  liderazgo: {
-    meta: 100,
-    real: 67,
-    porcentaje: 67
-  }
-}))
-
-// Datos por municipio para el gráfico de barras
-const datosPorMunicipio = computed(() => [
-  { nombre: 'La Ceiba', adolescentes: 420, porcentaje: 84 },
-  { nombre: 'Iriona', adolescentes: 285, porcentaje: 71 },
-  { nombre: 'Limón', adolescentes: 198, porcentaje: 66 },
-  { nombre: 'Santa Fe', adolescentes: 312, porcentaje: 78 },
-  { nombre: 'Santa Rosa de Aguán', adolescentes: 245, porcentaje: 70 },
-  { nombre: 'José Santos Guardiola', adolescentes: 178, porcentaje: 59 },
-  { nombre: 'Puerto Lempira', adolescentes: 237, porcentaje: 68 }
-])
-
-const maxAdolescentes = computed(() => 
-  Math.max(...datosPorMunicipio.value.map(m => m.adolescentes))
+  { immediate: true }
 )
 
-// Datos de semáforo por municipio (basado en datos reales del proyecto)
-const semaforos = computed(() => [
-  { 
-    nombre: 'La Ceiba', 
-    mac: 'verde', // Alta disponibilidad de MAC
-    proveedores: 'amarillo', // Proveedores parcialmente capacitados
-    eis: 'verde', // Buen avance en EIS
-    comunidades: 'verde' // Organizaciones activas
-  },
-  { 
-    nombre: 'Iriona', 
-    mac: 'amarillo', // Disponibilidad moderada de MAC
-    proveedores: 'amarillo', // Proveedores en proceso
-    eis: 'amarillo', // EIS en progreso
-    comunidades: 'verde' // Organizaciones activas
-  },
-  { 
-    nombre: 'Limón', 
-    mac: 'rojo', // Baja disponibilidad de MAC
-    proveedores: 'amarillo', // Proveedores en proceso
-    eis: 'rojo', // EIS requiere atención
-    comunidades: 'amarillo' // Organizaciones parciales
-  },
-  { 
-    nombre: 'Santa Fe', 
-    mac: 'verde', // Buena disponibilidad de MAC
-    proveedores: 'verde', // Proveedores capacitados
-    eis: 'verde', // Buen avance en EIS
-    comunidades: 'amarillo' // Organizaciones en progreso
-  },
-  { 
-    nombre: 'Santa Rosa de Aguán', 
-    mac: 'amarillo', // Disponibilidad moderada de MAC
-    proveedores: 'rojo', // Proveedores requieren atención
-    eis: 'amarillo', // EIS en progreso
-    comunidades: 'verde' // Organizaciones activas
-  },
-  { 
-    nombre: 'José Santos Guardiola', 
-    mac: 'amarillo', // Disponibilidad moderada de MAC
-    proveedores: 'amarillo', // Proveedores en proceso
-    eis: 'rojo', // EIS requiere atención
-    comunidades: 'amarillo' // Organizaciones en progreso
-  },
-  { 
-    nombre: 'Puerto Lempira', 
-    mac: 'rojo', // Baja disponibilidad de MAC
-    proveedores: 'rojo', // Proveedores requieren atención
-    eis: 'amarillo', // EIS en progreso
-    comunidades: 'rojo' // Organizaciones requieren atención
+const provisionFiltrada = computed(() => {
+  let datos = props.provision ?? []
+  if (props.municipioSeleccionado) {
+    datos = datos.filter((d) => d.municipio === props.municipioSeleccionado)
   }
-])
+  return datos
+})
+
+const estandaresFiltrados = computed(() => {
+  let datos = props.estandares ?? []
+  if (props.municipioSeleccionado) {
+    datos = datos.filter((d) => d.municipio === props.municipioSeleccionado)
+  }
+  return datos
+})
+
+const indicadores = computed(() => construirTarjetasKpi(props.indicadoresKpi, anoKpiSeleccionado.value))
+
+const bloqueKpiSeleccionado = computed(() => props.indicadoresKpi?.[outputKpiSeleccionado.value] ?? null)
+
+const formatearValorKpi = (valor) => {
+  if (valor == null || valor === '') return '—'
+  return valor
+}
+
+const datosPorMunicipio = computed(() => {
+  const totales = new Map()
+  for (const row of provisionFiltrada.value) {
+    if (!row.municipio) continue
+    const actual = totales.get(row.municipio) ?? 0
+    totales.set(row.municipio, actual + (Number(row.consumo) || 0))
+  }
+
+  const max = Math.max(...[...totales.values(), 1])
+  return [...totales.entries()]
+    .map(([nombre, consumo]) => ({
+      nombre,
+      consumo: Math.round(consumo),
+      porcentaje: Math.round((consumo / max) * 100)
+    }))
+    .sort((a, b) => b.consumo - a.consumo)
+})
+
+const maxConsumoMunicipio = computed(() =>
+  Math.max(...datosPorMunicipio.value.map((m) => m.consumo), 1)
+)
 
 // Funciones helper
 const getProgressColor = (porcentaje) => {
@@ -794,50 +835,30 @@ const getSemaforoClass = (estado) => {
 
 // ========== SECCIÓN B - DATOS SSR ==========
 
-// Disponibilidad de métodos anticonceptivos por municipio
-const disponibilidadMAC = computed(() => [
-  { nombre: 'La Ceiba', pildora: true, inyeccion: true, implante: true, diu: true, condonM: true, condonF: true, pae: true, estado: 'verde' },
-  { nombre: 'Iriona', pildora: true, inyeccion: true, implante: true, diu: false, condonM: true, condonF: false, pae: true, estado: 'amarillo' },
-  { nombre: 'Limón', pildora: true, inyeccion: true, implante: false, diu: false, condonM: true, condonF: false, pae: false, estado: 'rojo' },
-  { nombre: 'Santa Fe', pildora: true, inyeccion: true, implante: true, diu: true, condonM: true, condonF: true, pae: true, estado: 'verde' },
-  { nombre: 'Santa Rosa de Aguán', pildora: true, inyeccion: true, implante: false, diu: false, condonM: true, condonF: false, pae: true, estado: 'amarillo' },
-  { nombre: 'José Santos Guardiola', pildora: true, inyeccion: true, implante: true, diu: true, condonM: true, condonF: false, pae: true, estado: 'amarillo' },
-  { nombre: 'Puerto Lempira', pildora: true, inyeccion: false, implante: false, diu: false, condonM: true, condonF: false, pae: false, estado: 'rojo' }
-])
+const disponibilidadMAC = computed(() => derivarDisponibilidadMAC(provisionFiltrada.value))
 
-// Proveedores por estructura SESAL
-const proveedoresSESAL = computed(() => [
-  { nombre: 'La Ceiba', medicos: 8, enfermeras: 15, auxiliares: 10, otros: 3, total: 36 },
-  { nombre: 'Iriona', medicos: 4, enfermeras: 8, auxiliares: 6, otros: 2, total: 20 },
-  { nombre: 'Limón', medicos: 2, enfermeras: 5, auxiliares: 4, otros: 1, total: 12 },
-  { nombre: 'Santa Fe', medicos: 5, enfermeras: 10, auxiliares: 7, otros: 2, total: 24 },
-  { nombre: 'Santa Rosa de Aguán', medicos: 3, enfermeras: 6, auxiliares: 5, otros: 1, total: 15 },
-  { nombre: 'José Santos Guardiola', medicos: 6, enfermeras: 12, auxiliares: 8, otros: 2, total: 28 },
-  { nombre: 'Puerto Lempira', medicos: 10, enfermeras: 18, auxiliares: 12, otros: 5, total: 45 }
-])
+const proveedoresSESAL = computed(() => [])
 
-// Totales de proveedores SESAL
-const totalProveedoresSESAL = computed(() => {
-  return proveedoresSESAL.value.reduce((acc, m) => ({
-    medicos: acc.medicos + m.medicos,
-    enfermeras: acc.enfermeras + m.enfermeras,
-    auxiliares: acc.auxiliares + m.auxiliares,
-    otros: acc.otros + m.otros,
-    total: acc.total + m.total
-  }), { medicos: 0, enfermeras: 0, auxiliares: 0, otros: 0, total: 0 })
-})
+const totalProveedoresSESAL = computed(() => ({
+  medicos: 0,
+  enfermeras: 0,
+  auxiliares: 0,
+  otros: 0,
+  total: 0
+}))
 
-// Resumen SSR
 const resumenSSR = computed(() => {
-  const verde = disponibilidadMAC.value.filter(m => m.estado === 'verde').length
-  const amarillo = disponibilidadMAC.value.filter(m => m.estado === 'amarillo').length
-  const rojo = disponibilidadMAC.value.filter(m => m.estado === 'rojo').length
-  
+  const estandaresResumen = derivarResumenEstandares(estandaresFiltrados.value)
+  const verde = disponibilidadMAC.value.filter((m) => m.estado === 'verde').length
+  const amarillo = disponibilidadMAC.value.filter((m) => m.estado === 'amarillo').length
+  const rojo = disponibilidadMAC.value.filter((m) => m.estado === 'rojo').length
+  const proveedoresReal = indicadores.value.proveedores.real.total
+
   return {
-    establecimientosCalidad: 28,
-    totalEstablecimientos: 35,
-    proveedoresFormados: totalProveedoresSESAL.value.total,
-    totalProveedores: 200,
+    establecimientosCalidad: estandaresResumen.establecimientosCalidad,
+    totalEstablecimientos: estandaresResumen.totalEstablecimientos,
+    proveedoresFormados: proveedoresReal,
+    totalProveedores: indicadores.value.proveedores.meta.total,
     disponibilidadCompleta: verde,
     verde,
     amarillo,
@@ -895,14 +916,7 @@ const maxBarreras = computed(() => Math.max(...barrerasData.value.map(b => b.fre
 
 // ========== SECCIÓN E - DATOS SEMÁFOROS ==========
 
-// Tabla simple 7×4 con semáforos
-const semaforosMunicipales = computed(() => [
-  { nombre: 'La Ceiba', mac: 'verde', proveedores: 'amarillo', eis: 'verde', comunidades: 'verde' },
-  { nombre: 'Iriona', mac: 'amarillo', proveedores: 'amarillo', eis: 'amarillo', comunidades: 'verde' },
-  { nombre: 'Limón', mac: 'rojo', proveedores: 'amarillo', eis: 'rojo', comunidades: 'amarillo' },
-  { nombre: 'Santa Fe', mac: 'verde', proveedores: 'verde', eis: 'verde', comunidades: 'amarillo' },
-  { nombre: 'Santa Rosa de Aguán', mac: 'amarillo', proveedores: 'rojo', eis: 'amarillo', comunidades: 'verde' },
-  { nombre: 'José Santos Guardiola', mac: 'amarillo', proveedores: 'amarillo', eis: 'amarillo', comunidades: 'amarillo' },
-  { nombre: 'Puerto Lempira', mac: 'rojo', proveedores: 'amarillo', eis: 'rojo', comunidades: 'rojo' }
-])
+const semaforosMunicipales = computed(() =>
+  derivarSemaforosMunicipales(disponibilidadMAC.value, props.indicadoresKpi)
+)
 </script>

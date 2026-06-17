@@ -7,7 +7,7 @@
 
         <!-- RISS -->
         <div class="flex-1 min-w-[140px]">
-          <label class="block text-xs font-medium text-gray-500 mb-1.5">RISS</label>
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">RISS <span class="font-normal text-gray-400">(Red Integrada de Servicios de Salud)</span></label>
           <select v-model="filtroRISS" class="filtro-select w-full border border-gray-300 px-3 py-2 text-sm rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
             <option value="">Todas</option>
             <option v-for="r in rissDisponibles" :key="r" :value="r">{{ r }}</option>
@@ -151,7 +151,10 @@
           <thead>
             <tr class="bg-gray-50">
               <th class="border border-gray-300 text-left py-3 px-4 font-medium text-gray-700">Tipo de Método</th>
-              <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">RISS</th>
+              <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">
+                <div>RISS</div>
+                <div class="text-[10px] font-normal text-gray-500">Red Integrada de Servicios de Salud</div>
+              </th>
               <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">Municipio</th>
               <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">Mes</th>
               <th class="border border-gray-300 text-center py-3 px-4 font-medium text-gray-700">Año</th>
@@ -160,7 +163,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="item in datosFiltrados"
+              v-for="item in datosPaginados"
               :key="item.id"
               class="hover:bg-gray-50"
             >
@@ -179,14 +182,23 @@
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        v-if="vistaActiva === 'lista' && datosFiltrados.length > 0"
+        v-model:page="page"
+        v-model:page-size="pageSize"
+        :total="total"
+      />
     </div>
 
   </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Package, LayoutGrid, List, RotateCcw } from 'lucide-vue-next'
+import Pagination from '../components/Pagination.vue'
+import { usePagination } from '../composables/usePagination'
 
 const props = defineProps({
   datos: {
@@ -204,14 +216,6 @@ const filtroMunicipio = ref('')
 const filtroAno = ref('')
 const filtroMes = ref('')
 const filtroMetodo = ref('')
-
-const resetFiltros = () => {
-  filtroRISS.value = ''
-  filtroMunicipio.value = ''
-  filtroAno.value = ''
-  filtroMes.value = ''
-  filtroMetodo.value = ''
-}
 
 // Opciones de filtros — derivan de los datos completos
 const rissDisponibles = computed(() =>
@@ -239,9 +243,9 @@ const mesesOrdenados = computed(() => {
   return ordenMeses.filter(m => presentes.has(m))
 })
 
-// Datos filtrados
+// Datos filtrados y ordenados cronológicamente (año, mes, establecimiento)
 const datosFiltrados = computed(() => {
-  return props.datos.filter(item => {
+  const filtrados = props.datos.filter(item => {
     if (filtroRISS.value && item.RISS !== filtroRISS.value) return false
     if (filtroMunicipio.value && item.municipio !== filtroMunicipio.value) return false
     if (filtroAno.value && item.ano !== Number(filtroAno.value)) return false
@@ -249,7 +253,36 @@ const datosFiltrados = computed(() => {
     if (filtroMetodo.value && item.tipoMetodo !== filtroMetodo.value) return false
     return true
   })
+
+  return [...filtrados].sort((a, b) => {
+    if ((a.ano ?? 0) !== (b.ano ?? 0)) return (a.ano ?? 0) - (b.ano ?? 0)
+    const mesA = ordenMeses.indexOf(a.mes)
+    const mesB = ordenMeses.indexOf(b.mes)
+    if (mesA !== mesB) return mesA - mesB
+    return String(a.nombreES ?? '').localeCompare(String(b.nombreES ?? ''), 'es')
+  })
 })
+
+const {
+  page,
+  pageSize,
+  total,
+  paginatedItems: datosPaginados,
+  reiniciar: reiniciarPaginacion
+} = usePagination(datosFiltrados, { pageSize: 25 })
+
+watch([filtroRISS, filtroMunicipio, filtroAno, filtroMes, filtroMetodo], () => {
+  reiniciarPaginacion()
+})
+
+const resetFiltros = () => {
+  filtroRISS.value = ''
+  filtroMunicipio.value = ''
+  filtroAno.value = ''
+  filtroMes.value = ''
+  filtroMetodo.value = ''
+  reiniciarPaginacion()
+}
 
 // Resumen
 const totalConsumo = computed(() =>
